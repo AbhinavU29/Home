@@ -123,6 +123,8 @@
                     href="#gallery">Gallery</a>
                 <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
                     href="#location">Location</a>
+                <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
+                    href="#contact">Contact</a>
 
                 <!-- Theme Toggle Menu -->
                 <div class="relative group">
@@ -151,10 +153,10 @@
                     </div>
                 </div>
 
-                <button
-                    class="bg-primary hover:bg-primary/90 text-background-dark px-8 py-2 rounded uppercase font-bold text-sm tracking-widest transition-all">
+                <a href="#rsvp"
+                    class="bg-primary hover:bg-primary/90 text-background-dark px-8 py-2 rounded uppercase font-bold text-sm tracking-widest transition-all text-center inline-block">
                     RSVP
-                </button>
+                </a>
             </div>
             <button class="md:hidden text-primary">
                 <span class="material-symbols-outlined text-3xl">menu</span>
@@ -325,6 +327,78 @@
             </div>
         </div>
     </section>
+
+    <!-- RSVP Section -->
+    <section class="py-24 px-6 bg-slate-50 dark:bg-slate-900/30" id="rsvp">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">RSVP</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-lg mb-12">We'd love to have you with us. Please let us
+                know if you can make it.</p>
+
+            <form class="max-w-2xl mx-auto space-y-6 text-left">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2"
+                            for="rsvp-name">Name</label>
+                        <input type="text" id="rsvp-name"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                            placeholder="Your Full Name">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2"
+                            for="rsvp-guests">Number of Guests</label>
+                        <input type="number" id="rsvp-guests" min="1"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                            placeholder="0">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-primary hover:bg-primary/90 text-background-dark py-4 rounded-xl font-bold tracking-widest uppercase transition-all shadow-lg shadow-primary/20 mt-4">
+                    Confirm Attendance
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-24 px-6 bg-background-light dark:bg-background-dark" id="contact">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">Contact Us</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-lg mb-12">Have any questions or need further assistance?
+                Feel free to reach out to us directly.</p>
+
+            <form class="max-w-2xl mx-auto space-y-6 text-left">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2"
+                            for="contact-name">Name</label>
+                        <input type="text" id="contact-name"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                            placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2"
+                            for="contact-email">Email</label>
+                        <input type="email" id="contact-email"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                            placeholder="hello@example.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold tracking-widest uppercase text-slate-500 mb-2"
+                        for="contact-message">Message</label>
+                    <textarea id="contact-message" rows="4"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
+                        placeholder="How can we help you?"></textarea>
+                </div>
+                <button type="submit"
+                    class="w-full bg-primary hover:bg-primary/90 text-background-dark py-4 rounded-xl font-bold tracking-widest uppercase transition-all shadow-lg shadow-primary/20">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="py-12 px-6 border-t border-primary/10 bg-white dark:bg-slate-950">
         <div

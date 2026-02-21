@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>ApAA | Housewarming Ceremony</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap"
         rel="stylesheet" />
@@ -215,8 +216,12 @@
             </div>
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Time Card -->
-                <div
-                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5">
+                <div onclick="addToCalendar()"
+                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden">
+                    <div
+                        class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+                        <span class="material-symbols-outlined">calendar_add_on</span>
+                    </div>
                     <div class="flex items-center gap-4 mb-6 text-primary">
                         <span class="material-symbols-outlined text-4xl">schedule</span>
                         <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Scheduled Time</p>
@@ -226,13 +231,17 @@
                         followed by brunch.</p>
                 </div>
                 <!-- Date Card -->
-                <div
-                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5">
+                <div onclick="addToCalendar()"
+                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden">
+                    <div
+                        class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+                        <span class="material-symbols-outlined">calendar_add_on</span>
+                    </div>
                     <div class="flex items-center gap-4 mb-6 text-primary">
                         <span class="material-symbols-outlined text-4xl">calendar_today</span>
                         <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Event Date</p>
                     </div>
-                    <p class="text-3xl md:text-4xl font-extrabold tracking-tight">Sunday, Oct 12, 2025</p>
+                    <p class="text-3xl md:text-4xl font-extrabold tracking-tight">Sunday, May 10, 2026</p>
                     <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Mark your calendars for this special
                         milestone.</p>
                 </div>
@@ -492,6 +501,69 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
+        }
+    </script>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none">
+        <div
+            class="bg-background-dark dark:bg-white text-white dark:text-background-dark px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
+            <span class="material-symbols-outlined text-primary">check_circle</span>
+            <p class="font-bold text-sm">Thanks for adding the event to your calendar!</p>
+        </div>
+    </div>
+
+    <script>
+        function addToCalendar() {
+            // Event Details
+            const title = 'ApAA Housewarming Ceremony';
+            const location = '123 Elegance Boulevard, Golden Hills, CA 90210';
+            const description = 'Join us as we celebrate ApAA! Traditional rituals followed by brunch.';
+
+            // Dates in formatted string: YYYYMMDDTHHMMSSZ
+            // Example: May 10, 2026 at 09:00 AM IST is May 10, 2026 at 03:30 AM UTC
+            const dtstart = '20260510T033000Z';
+            const dtend = '20260510T073000Z';
+
+            // Create ICS content
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//ApAA Housewarming//EN',
+                'BEGIN:VEVENT',
+                `UID:${new Date().getTime()}@apaa-housewarming.com`,
+                `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                `DTSTART:${dtstart}`,
+                `DTEND:${dtend}`,
+                `SUMMARY:${title}`,
+                `DESCRIPTION:${description}`,
+                `LOCATION:${location}`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\n');
+
+            // Create a Blob containing the ICS text
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+
+            // Create a download link for the Blob
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', 'ApAA_Housewarming.ics');
+
+            // Append the link, trigger click, and remove it
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Show toast notification
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-24', 'opacity-0');
+
+            // Hide after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 4000);
         }
 
         document.addEventListener('DOMContentLoaded', () => {

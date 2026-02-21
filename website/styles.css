@@ -1,0 +1,489 @@
+/* ==========================================================================
+   CSS Variables & Tokens
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --color-bg-primary: #FAFAFA;     /* Very light grey/cream */
+    --color-bg-secondary: #F2F0EB;   /* Slightly darker cream */
+    --color-primary-accent: #B89345; /* Deep Gold */
+    --color-secondary-accent: #2A4B3A; /* Forest Green */
+    --color-text-main: #2C2C2C;      /* Soft Black for readable text */
+    --color-text-muted: #666666;     /* Medium Grey for subtle text */
+    --color-white: #FFFFFF;
+
+    /* Typography */
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Shadows & Transitions */
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.08);
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ==========================================================================
+   Base Reset
+   ========================================================================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px; /* Kept intentionally narrow for single-column card feel */
+    margin: 0 auto;
+    padding: 4rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--color-secondary-accent);
+    margin-bottom: 2.5rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: var(--color-primary-accent);
+}
+
+/* Animations */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-smooth);
+}
+
+.fade-in.appear {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    min-height: 500px;
+    /* We'll use the generated image here once assets are moved */
+    background-image: url('assets/house_exterior_welcoming_1771654803959.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Parallax effect */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--color-white);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(42, 75, 58, 0.4), rgba(0, 0, 0, 0.6));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    animation: heroFadeUp 1.5s ease backwards;
+}
+
+@keyframes heroFadeUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-text {
+    font-size: 1.25rem;
+    font-family: var(--font-body);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.house-name {
+    font-size: 6rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 1rem;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.8;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.scroll-indicator p {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.scroll-indicator i {
+    font-size: 1.5rem;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+
+/* ==========================================================================
+   Ceremony Details Section
+   ========================================================================== */
+.details-section {
+    background-color: var(--color-bg-secondary);
+    position: relative;
+    z-index: 10;
+    margin-top: -50px;
+}
+
+.details-card {
+    background-color: var(--color-white);
+    border-radius: 16px;
+    padding: 3.5rem 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid rgba(184, 147, 69, 0.2); /* Subtle gold border */
+}
+
+.event-title {
+    font-size: 2.5rem;
+    color: var(--color-secondary-accent);
+    margin-bottom: 2.5rem;
+}
+
+.time-date {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+.date-block, .time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.date-block span, .time-block span {
+    display: block;
+}
+
+.day, .time-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.date-number, .time-number {
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--color-primary-accent);
+    margin-bottom: 0.5rem;
+}
+
+.month-year, .am-pm {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+.divider {
+    width: 2px;
+    height: 100px;
+    background-color: var(--color-bg-secondary);
+}
+
+/* ==========================================================================
+   Gallery Section
+   ========================================================================== */
+.gallery-section {
+    background-color: var(--color-bg-primary);
+}
+
+.slider-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    aspect-ratio: 4/3;
+    background: #e0e0e0; /* Placeholder color before load */
+}
+
+.slider-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    height: 100%;
+}
+
+.slide {
+    min-width: 100%;
+    height: 100%;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    color: var(--color-secondary-accent);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(4px);
+    z-index: 2;
+}
+
+.slider-nav:hover {
+    background-color: var(--color-white);
+    color: var(--color-primary-accent);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn { left: 1rem; }
+.next-btn { right: 1rem; }
+
+.slider-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #D1D1D1;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.dot.active {
+    background-color: var(--color-primary-accent);
+    transform: scale(1.3);
+}
+
+/* ==========================================================================
+   Location Section
+   ========================================================================== */
+.location-section {
+    background-color: var(--color-bg-secondary);
+}
+
+.location-card {
+    background-color: var(--color-white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+}
+
+.address-container {
+    display: flex;
+    align-items: flex-start;
+    padding: 2.5rem;
+    gap: 1.5rem;
+}
+
+.icon-wrap {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(184, 147, 69, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-primary-accent);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.address-text h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-secondary-accent);
+}
+
+.address-text p {
+    color: var(--color-text-muted);
+}
+
+.map-container {
+    height: 350px;
+    width: 100%;
+}
+
+.action-buttons {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    font-size: 1.1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.primary-btn {
+    background-color: var(--color-secondary-accent);
+    color: var(--color-white);
+    border: 2px solid var(--color-secondary-accent);
+}
+
+.primary-btn:hover {
+    background-color: var(--color-primary-accent);
+    border-color: var(--color-primary-accent);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(184, 147, 69, 0.3);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+    background-color: var(--color-secondary-accent);
+    color: var(--color-white);
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+footer p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+footer .signature {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-style: italic;
+    color: var(--color-primary-accent);
+    margin-top: 1rem;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+@media (max-width: 768px) {
+    .house-name {
+        font-size: 4.5rem;
+    }
+
+    .time-date {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .divider {
+        width: 100px;
+        height: 2px;
+    }
+
+    .date-number, .time-number {
+        font-size: 3.5rem;
+    }
+
+    .address-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 1.5rem;
+    }
+
+    .map-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .house-name {
+        font-size: 3.5rem;
+    }
+
+    .event-title {
+        font-size: 2rem;
+    }
+
+    .details-card {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .slider-container {
+        aspect-ratio: 1/1; /* Square for very tight mobile screens */
+    }
+}

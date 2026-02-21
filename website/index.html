@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ApAA | Housewarming Ceremony</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#edb21d",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221d10",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+        }
+
+        @keyframes slowZoom {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            z-index: 0;
+            transition: opacity 1.5s ease-in-out;
+            transform: scale(1);
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 10;
+            animation: slowZoom 6s ease-out forwards;
+        }
+    </style>
+    <script>
+        // Apply theme based on user preference or system default
+        const applyTheme = () => {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        applyTheme();
+
+        // Listen for system theme changes if set to system
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!('theme' in localStorage)) {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // Toggle theme function
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                localStorage.theme = 'dark';
+            } else if (mode === 'light') {
+                localStorage.theme = 'light';
+            } else {
+                localStorage.removeItem('theme');
+            }
+            applyTheme();
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-[#f8f7f6] dark:bg-background-dark border-b border-primary/10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="size-8 bg-primary flex items-center justify-center rounded text-background-dark">
+                    <span class="material-symbols-outlined text-[20px] font-bold">home_pin</span>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-background-dark dark:text-white">ApAA</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
+                    href="#">Home</a>
+                <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
+                    href="#ceremony">Ceremony</a>
+                <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
+                    href="#gallery">Gallery</a>
+                <a class="text-sm font-bold text-background-dark dark:text-white hover:text-primary transition-colors uppercase tracking-widest"
+                    href="#location">Location</a>
+
+                <!-- Theme Toggle Menu -->
+                <div class="relative group">
+                    <button
+                        class="flex items-center justify-center text-background-dark dark:text-white hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[24px]">contrast</span>
+                    </button>
+                    <!-- Invisible pt-4 area so hover isn't lost before reaching the menu -->
+                    <div
+                        class="absolute right-0 top-full pt-4 w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div
+                            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg mt-1 overflow-hidden">
+                            <button onclick="setTheme('light')"
+                                class="w-full text-left px-4 py-3 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-slate-700 dark:text-slate-300 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">light_mode</span> Light
+                            </button>
+                            <button onclick="setTheme('dark')"
+                                class="w-full text-left px-4 py-3 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-slate-700 dark:text-slate-300 transition-colors border-t border-slate-100 dark:border-slate-800">
+                                <span class="material-symbols-outlined text-[18px]">dark_mode</span> Dark
+                            </button>
+                            <button onclick="setTheme('system')"
+                                class="w-full text-left px-4 py-3 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-slate-700 dark:text-slate-300 transition-colors border-t border-slate-100 dark:border-slate-800">
+                                <span class="material-symbols-outlined text-[18px]">settings_brightness</span> System
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    class="bg-primary hover:bg-primary/90 text-background-dark px-8 py-2 rounded uppercase font-bold text-sm tracking-widest transition-all">
+                    RSVP
+                </button>
+            </div>
+            <button class="md:hidden text-primary">
+                <span class="material-symbols-outlined text-3xl">menu</span>
+            </button>
+        </div>
+    </nav>
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0 bg-black">
+            <img alt="Luxury modern house exterior" class="hero-slide active"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGqtjwDktDpchEfcATjrthbSHQ130RU5KhLjj6kIjA0mxipGe4-txVkuVc2MwHreafM4fEOnKwKZXQY0K1yoPlQtcwl4yjYvSJmmLZLkS227EksZ-nl8_PlYu379FoeEM8q2sm9ahL91_ohIuig1pBpwpI6E_aNoMOlMXFjCUUDS9jjb2ZU76GUvcCEs6s8XBK8iQvSEy_gxAZ_pzJ3PbPi0eMTx_GImBqkbQLF9x6WWBhcvQRria4AfaX5OqGjzTmvVpSYQenzBy1" />
+            <img alt="Modern Living Room" class="hero-slide"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr33IM2_2xSO-4witCxpPdTuw7cgVqQcBfOB-pLdsyq4fviwygq7qZccZpSW5cgqMyd7mV9zXndjQjLAX1sWiWlzilHGCq9OWnGdfzg3EnLw3NRQjyRXqsbJAMeSSsA19ps3PWUBd4xxYnIRtWbhJ9mIQafix9Vp8TyavlilUARssm-yxHDHprS_MSF2d2TmZ0BM1WRz9iSZBG5ZOlNP35NhuYI4C2uLvxzXbdMoNZdz8mzOGcqal9pvE4nChmo5xIjllILMGIEVfX" />
+            <img alt="Modern Kitchen" class="hero-slide"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHvfPZ67faGJU-QImclKJ5Deo0JcRU0AfbMw37qynBNfrHcLaX6AucnBV1ey_U5NNYasfhoyov1-9YcIRWFNkztCu-JRm7-2XZ_sfZ1edbRytAOPeoiY1chgOqPRLjvMSJf3hNd0Sx_xC8S6-hDv3LUMy58r_MH6GYeKrEiHLbwz3lcQ0WEBr2OUzUH852_RUUzRPnExUf-NT6ICXM8RqVby5d-QwBnMzFAgOkzcNeEAWRbMprvPHab22msyTh9NPePZSqWL-yENyK" />
+            <img alt="Cozy Balcony" class="hero-slide"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaYPIzKlSEssKQ92hD-BdZiy_J0VyPsc_4Nq-vNvIfAAQpTN8hRVjQVYEyUu_RC-DwNMZmcQe3-ULxNL5_3wmFdinOqWkvpOmFh3KoRJyjfq3lwylfvMkxD5Dq5hUQlQYbtmcn-_jBq8GHC7jw2q6L17R1K0Gqwlc70zRWXETMrK2nRxJltBpOMOKIB7las845lUav8Z4u1lh2nTs9uVnXtIQuT9x0fTpZJgrFOmZdgc2wsN78AgdnnayNO3-tcyYDp_tSLc_b6H-f" />
+            <div class="absolute inset-0 hero-gradient z-20"></div>
+        </div>
+
+        <!-- Navigation Dots -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-4">
+            <button class="dot-btn w-3 h-3 rounded-full bg-white transition-all transform scale-125 shadow-lg"></button>
+            <button class="dot-btn w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all shadow-lg"></button>
+            <button class="dot-btn w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all shadow-lg"></button>
+            <button class="dot-btn w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all shadow-lg"></button>
+        </div>
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <p class="text-primary font-bold tracking-[0.4em] uppercase mb-6 text-sm md:text-base">A New Beginning</p>
+            <h1 class="text-white text-5xl md:text-8xl font-black leading-tight tracking-tighter mb-8 drop-shadow-2xl">
+                All are welcome to my home!
+            </h1>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <div class="h-[1px] w-12 bg-primary/60 hidden md:block"></div>
+                <h2 class="text-white/90 text-2xl md:text-3xl font-light tracking-widest uppercase">ApAA</h2>
+                <div class="h-[1px] w-12 bg-primary/60 hidden md:block"></div>
+            </div>
+            <div class="mt-12">
+                <a class="inline-flex items-center gap-2 text-white border border-white/30 px-8 py-4 rounded-full hover:bg-white hover:text-background-dark transition-all duration-300"
+                    href="#ceremony">
+                    Explore the Event
+                    <span class="material-symbols-outlined">arrow_downward</span>
+                </a>
+            </div>
+        </div>
+    </header>
+    <!-- Ceremony Section -->
+    <section class="py-24 px-6 bg-background-light dark:bg-background-dark" id="ceremony">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-primary text-4xl md:text-5xl font-black tracking-tight mb-4">Housewarming Ceremony</h2>
+                <div class="w-24 h-1 bg-primary mx-auto rounded-full mb-6"></div>
+                <p class="text-lg md:text-xl font-medium text-slate-600 dark:text-slate-400">Our house, your home. Join
+                    us as we celebrate ApAA!</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Time Card -->
+                <div
+                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5">
+                    <div class="flex items-center gap-4 mb-6 text-primary">
+                        <span class="material-symbols-outlined text-4xl">schedule</span>
+                        <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Scheduled Time</p>
+                    </div>
+                    <p class="text-4xl md:text-5xl font-extrabold tracking-tight">09:00 AM</p>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Join us for the traditional rituals
+                        followed by brunch.</p>
+                </div>
+                <!-- Date Card -->
+                <div
+                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5">
+                    <div class="flex items-center gap-4 mb-6 text-primary">
+                        <span class="material-symbols-outlined text-4xl">calendar_today</span>
+                        <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Event Date</p>
+                    </div>
+                    <p class="text-3xl md:text-4xl font-extrabold tracking-tight">Sunday, Oct 12, 2025</p>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Mark your calendars for this special
+                        milestone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Gallery Section -->
+    <section class="py-24 px-6 bg-slate-100 dark:bg-slate-900/30" id="gallery">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">Home Gallery</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-lg max-w-xl font-medium">A glimpse into our
+                        sanctuary. Designed with love and modern aesthetics.</p>
+                </div>
+                <div class="hidden md:block">
+                    <span class="text-primary font-bold tracking-widest uppercase text-sm">Scroll to view more</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-[800px]">
+                <div class="md:col-span-8 overflow-hidden rounded-2xl relative group">
+                    <img alt="Modern Living Room"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        data-alt="Sleek minimalist living room with beige furniture"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr33IM2_2xSO-4witCxpPdTuw7cgVqQcBfOB-pLdsyq4fviwygq7qZccZpSW5cgqMyd7mV9zXndjQjLAX1sWiWlzilHGCq9OWnGdfzg3EnLw3NRQjyRXqsbJAMeSSsA19ps3PWUBd4xxYnIRtWbhJ9mIQafix9Vp8TyavlilUARssm-yxHDHprS_MSF2d2TmZ0BM1WRz9iSZBG5ZOlNP35NhuYI4C2uLvxzXbdMoNZdz8mzOGcqal9pvE4nChmo5xIjllILMGIEVfX" />
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                        <p class="text-white font-bold text-xl">The Living Space</p>
+                    </div>
+                </div>
+                <div class="md:col-span-4 grid grid-rows-2 gap-6">
+                    <div class="overflow-hidden rounded-2xl relative group">
+                        <img alt="Modern Kitchen"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="Modern gourmet kitchen with gold accents"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHvfPZ67faGJU-QImclKJ5Deo0JcRU0AfbMw37qynBNfrHcLaX6AucnBV1ey_U5NNYasfhoyov1-9YcIRWFNkztCu-JRm7-2XZ_sfZ1edbRytAOPeoiY1chgOqPRLjvMSJf3hNd0Sx_xC8S6-hDv3LUMy58r_MH6GYeKrEiHLbwz3lcQ0WEBr2OUzUH852_RUUzRPnExUf-NT6ICXM8RqVby5d-QwBnMzFAgOkzcNeEAWRbMprvPHab22msyTh9NPePZSqWL-yENyK" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                            <p class="text-white font-bold">Culinary Heart</p>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden rounded-2xl relative group">
+                        <img alt="Cozy Balcony"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="Luxury home balcony with sunset view"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaYPIzKlSEssKQ92hD-BdZiy_J0VyPsc_4Nq-vNvIfAAQpTN8hRVjQVYEyUu_RC-DwNMZmcQe3-ULxNL5_3wmFdinOqWkvpOmFh3KoRJyjfq3lwylfvMkxD5Dq5hUQlQYbtmcn-_jBq8GHC7jw2q6L17R1K0Gqwlc70zRWXETMrK2nRxJltBpOMOKIB7las845lUav8Z4u1lh2nTs9uVnXtIQuT9x0fTpZJgrFOmZdgc2wsN78AgdnnayNO3-tcyYDp_tSLc_b6H-f" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                            <p class="text-white font-bold">Outdoor Serenity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Location Section -->
+    <section class="py-24 px-6 overflow-hidden" id="location">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-6">Find Your Way</h2>
+                        <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                            We are located in the heart of the scenic suburbs. Follow the gold markers leading to our
+                            front gate. Valet parking will be available for all guests.
+                        </p>
+                    </div>
+                    <div class="flex items-start gap-6 p-6 rounded-2xl bg-primary/5 border border-primary/20">
+                        <div
+                            class="size-14 bg-primary flex items-center justify-center rounded-xl text-background-dark shrink-0">
+                            <span class="material-symbols-outlined text-3xl">location_on</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xl mb-1">ApAA Residence</p>
+                            <p class="text-slate-600 dark:text-slate-400 font-medium">123 Elegance Boulevard, Golden
+                                Hills, CA 90210</p>
+                        </div>
+                    </div>
+                    <a href="https://www.google.com/maps?q=11.742969,75.509808&entry=gps" target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-full md:w-auto inline-flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-background-dark px-10 py-5 rounded-xl font-black text-lg transition-all shadow-xl shadow-primary/20 uppercase tracking-wider">
+                        Open in Google Maps
+                        <span class="material-symbols-outlined">directions</span>
+                    </a>
+                </div>
+                <div
+                    class="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-white dark:border-slate-800 z-0">
+                    <iframe src="https://maps.google.com/maps?q=11.742969,75.509808&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-primary/10 bg-white dark:bg-slate-950">
+        <div
+            class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            <div class="flex items-center gap-3">
+                <div class="size-8 bg-primary/20 flex items-center justify-center rounded text-primary">
+                    <span class="material-symbols-outlined text-sm font-bold">home</span>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight">ApAA</span>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">© 2025 ApAA Housewarming. All rights reserved.</p>
+            <div class="flex items-center gap-6">
+                <a class="text-slate-400 hover:text-primary transition-colors" href="#">
+                    <span class="material-symbols-outlined">share</span>
+                </a>
+                <a class="text-slate-400 hover:text-primary transition-colors" href="#">
+                    <span class="material-symbols-outlined">favorite</span>
+                </a>
+                <a class="text-slate-400 hover:text-primary transition-colors" href="#">
+                    <span class="material-symbols-outlined">mail</span>
+                </a>
+            </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('.dot-btn');
+            let currentSlide = 0;
+            let slideInterval;
+
+            function goToSlide(index) {
+                // Remove active classes
+                slides[currentSlide].classList.remove('active');
+                dots[currentSlide].classList.remove('bg-white', 'scale-125');
+                dots[currentSlide].classList.add('bg-white/50');
+
+                // Update index
+                currentSlide = index;
+
+                // Add active classes
+                slides[currentSlide].classList.add('active');
+                dots[currentSlide].classList.remove('bg-white/50');
+                dots[currentSlide].classList.add('bg-white', 'scale-125');
+            }
+
+            function nextSlide() {
+                let next = (currentSlide + 1) % slides.length;
+                goToSlide(next);
+            }
+
+            function startSlideshow() {
+                if (slideInterval) clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, 6000);
+            }
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    startSlideshow(); // Reset timer on manual click
+                });
+            });
+
+            // Initialize auto-play
+            startSlideshow();
+        });
+    </script>
+</body>
+
+</html>

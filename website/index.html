@@ -216,12 +216,8 @@
             </div>
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Time Card -->
-                <div onclick="addToCalendar()"
-                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden">
-                    <div
-                        class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary">
-                        <span class="material-symbols-outlined">calendar_add_on</span>
-                    </div>
+                <div
+                    class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5">
                     <div class="flex items-center gap-4 mb-6 text-primary">
                         <span class="material-symbols-outlined text-4xl">schedule</span>
                         <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Scheduled Time</p>
@@ -231,7 +227,7 @@
                         followed by brunch.</p>
                 </div>
                 <!-- Date Card -->
-                <div onclick="addToCalendar()"
+                <div onclick="openCalendarModal()"
                     class="group p-10 rounded-2xl border border-primary/20 bg-white dark:bg-slate-900/50 hover:border-primary transition-all duration-500 shadow-xl shadow-primary/5 cursor-pointer relative overflow-hidden">
                     <div
                         class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary">
@@ -266,7 +262,7 @@
                     <img alt="Modern Living Room"
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         data-alt="Sleek minimalist living room with beige furniture"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr33IM2_2xSO-4witCxpPdTuw7cgVqQcBfOB-pLdsyq4fviwygq7qZccZpSW5cgqMyd7mV9zXndjQjLAX1sWiWlzilHGCq9OWnGdfzg3EnLw3NRQjyRXqsbJAMeSSsA19ps3PWUBd4xxYnIRtWbhJ9mIQafix9Vp8TyavlilUARssm-yxHDHprS_MSF2d2TmZ0BM1WRz9iSZBG5ZOlNP35NhuYI4C2uLvxzXbdMoNZdz8mzOGcqal9pvE4nChmo5xIjllILMGIEVfX" />
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr33IM2_2xSO-4witCxpPdTuw7cgVqQcBfOB-pLdsyq4fviwygq7qZccZpSW5cgqMyd7mV9zXndjQjLAX1sWiWlzilHGCq9OWnGdfzg3EnLw3NRQjyRXqsbJAMeSSsA19ps3PWUBd4xxYnIRgWbhJ9mIQafix9Vp8TyavlilUARssm-yxHDHprS_MSF2d2TmZ0BM1WRz9iSZBG5ZOlNP35NhuYI4C2uLvxzXbdMoNZdz8mzOGcqal9pvE4nChmo5xIjllILMGIEVfX" />
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
                         <p class="text-white font-bold text-xl">The Living Space</p>
@@ -504,63 +500,178 @@
         }
     </script>
 
+    <!-- Add to Calendar Modal -->
+    <div id="calendar-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="calendar-backdrop"
+            onclick="closeCalendarModal()"></div>
+
+        <!-- Modal Content -->
+        <div id="calendar-content"
+            class="relative bg-white dark:bg-slate-900 w-[90%] max-w-md rounded-3xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 border border-slate-200 dark:border-slate-800">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold">Add to Calendar</h3>
+                <button onclick="closeCalendarModal()"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-4 flex flex-col gap-2">
+                <button onclick="addToSpecificCalendar('google')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg"
+                        alt="Google Calendar" class="w-8 h-8">
+                    <span class="font-medium">Google Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('outlook')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        class="w-8 h-8 fill-[#0078D4]">
+                        <title>Microsoft Outlook</title>
+                        <path
+                            d="M7.88 12.04q0-.45.11-.87.12-.41.33-.74.22-.33.58-.52.36-.2.87-.2t.88.2q.36.19.58.52.22.33.33.74.11.42.11.87t-.11.87q-.11.41-.33.74-.22.33-.58.52-.36.2-.88.2t-.87-.2q-.36-.19-.58-.52-.21-.33-.33-.74-.11-.42-.11-.87zm9.93 5.42h3.29V5.41H17.8v12.05zm-3.26-10.8v10.87L2.4 19.85v-15.3l12.13 2.19zm-5.06 7.42q.65 0 1.15-.22.51-.21.86-.6.36-.39.55-.95.19-.56.19-1.29 0-.74-.19-1.3-.19-.55-.55-.94-.35-.38-.86-.59-.5-.22-1.15-.22-.64 0-1.15.22-.51.21-.86.59-.36.39-.55.94-.19.56-.19 1.3 0 .73.19 1.29.19.56.55.95.35.39.86.6.5.22 1.15.22z" />
+                    </svg>
+                    <span class="font-medium">Outlook Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('yahoo')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        class="w-8 h-8 fill-[#6001D2]">
+                        <title>Yahoo!</title>
+                        <path
+                            d="M16.036 2.05s-2.096 4.965-2.096 4.965c-.067.168-.133.385-.205.578L9.93 2.052H5.7l5.354 7.622-1.928 6.04h3.763l2.219-6.908c.08-.24.162-.48.243-.72h.024A10.51 10.51 0 0 0 15.65 9.1v8.615h3.693V2.05h-3.307zM24 18.067H20.088v3.966H24v-3.966z" />
+                    </svg>
+                    <span class="font-medium">Yahoo Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('apple')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div
+                        class="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-lg flex items-center justify-center text-white dark:text-slate-900">
+                        <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                    </div>
+                    <span class="font-medium">Apple Calendar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
         class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none">
         <div
             class="bg-background-dark dark:bg-white text-white dark:text-background-dark px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
             <span class="material-symbols-outlined text-primary">check_circle</span>
-            <p class="font-bold text-sm">Thanks for adding the event to your calendar!</p>
+            <p class="font-bold text-sm">Thanks for keeping us in your calendar!</p>
         </div>
     </div>
 
     <script>
-        function addToCalendar() {
+        // Modal State
+        function openCalendarModal() {
+            const modal = document.getElementById('calendar-modal');
+            const backdrop = document.getElementById('calendar-backdrop');
+            const content = document.getElementById('calendar-content');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Trigger animation
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeCalendarModal() {
+            const modal = document.getElementById('calendar-modal');
+            const backdrop = document.getElementById('calendar-backdrop');
+            const content = document.getElementById('calendar-content');
+
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function addToSpecificCalendar(provider) {
             // Event Details
-            const title = 'ApAA Housewarming Ceremony';
-            const location = '123 Elegance Boulevard, Golden Hills, CA 90210';
-            const description = 'Join us as we celebrate ApAA! Traditional rituals followed by brunch.';
+            const event = {
+                title: 'ApAA Housewarming Ceremony',
+                location: '123 Elegance Boulevard, Golden Hills, CA 90210',
+                description: 'Join us as we celebrate ApAA! Traditional rituals followed by brunch.',
+                // Start: May 10, 2026, 09:00 AM IST -> 03:30 AM UTC
+                // End: May 10, 2026, 01:00 PM IST -> 07:30 AM UTC
+                start: '20260510T033000Z',
+                end: '20260510T073000Z'
+            };
 
-            // Dates in formatted string: YYYYMMDDTHHMMSSZ
-            // Example: May 10, 2026 at 09:00 AM IST is May 10, 2026 at 03:30 AM UTC
-            const dtstart = '20260510T033000Z';
-            const dtend = '20260510T073000Z';
+            let url = '';
 
-            // Create ICS content
-            const icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'PRODID:-//ApAA Housewarming//EN',
-                'BEGIN:VEVENT',
-                `UID:${new Date().getTime()}@apaa-housewarming.com`,
-                `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-                `DTSTART:${dtstart}`,
-                `DTEND:${dtend}`,
-                `SUMMARY:${title}`,
-                `DESCRIPTION:${description}`,
-                `LOCATION:${location}`,
-                'END:VEVENT',
-                'END:VCALENDAR'
-            ].join('\n');
+            // Handle different providers
+            switch (provider) {
+                case 'google':
+                    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.end}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
 
-            // Create a Blob containing the ICS text
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                case 'outlook':
+                    url = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${event.start}&enddt=${event.end}&subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
 
-            // Create a download link for the Blob
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.setAttribute('download', 'ApAA_Housewarming.ics');
+                case 'yahoo':
+                    url = `https://calendar.yahoo.com/?v=60&view=d&type=20&title=${encodeURIComponent(event.title)}&st=${event.start}&et=${event.end}&desc=${encodeURIComponent(event.description)}&in_loc=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
 
-            // Append the link, trigger click, and remove it
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                case 'apple':
+                default:
+                    // Fallback to ICS file for Apple Calendar or Desktop users
+                    const icsContent = [
+                        'BEGIN:VCALENDAR',
+                        'VERSION:2.0',
+                        'PRODID:-//ApAA Housewarming//EN',
+                        'BEGIN:VEVENT',
+                        `UID:${new Date().getTime()}@apaa-housewarming.com`,
+                        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                        `DTSTART:${event.start}`,
+                        `DTEND:${event.end}`,
+                        `SUMMARY:${event.title}`,
+                        `DESCRIPTION:${event.description}`,
+                        `LOCATION:${event.location}`,
+                        'END:VEVENT',
+                        'END:VCALENDAR'
+                    ].join('\n');
 
-            // Show toast notification
+                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.setAttribute('download', 'ApAA_Housewarming.ics');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    break;
+            }
+
+            // Close the modal and show toast
+            closeCalendarModal();
+            showToast();
+        }
+
+        function showToast() {
             const toast = document.getElementById('toast');
             toast.classList.remove('translate-y-24', 'opacity-0');
-
-            // Hide after 4 seconds
             setTimeout(() => {
                 toast.classList.add('translate-y-24', 'opacity-0');
             }, 4000);

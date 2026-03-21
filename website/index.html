@@ -132,30 +132,38 @@
             <div class="flex items-center gap-4 z-20 relative">
                 <img src="assets/logo_white_bg.jpg" alt="PRAMADAM Logo"
                     class="h-10 w-10 rounded-full object-cover shadow-sm border border-primary/20 bg-white/80 transition-transform hover:scale-105 duration-300">
-                <button aria-label="Search" onclick="toggleSearch()" class="flex items-center justify-center text-[#e8304f] dark:text-[#ff6b82] hover:text-[#c4203d] dark:hover:text-[#ff8a9a] transition-colors hover:-translate-y-0.5 transform duration-300">
+                <button aria-label="Search" onclick="toggleSearch()"
+                    class="flex items-center justify-center text-[#e8304f] dark:text-[#ff6b82] hover:text-[#c4203d] dark:hover:text-[#ff8a9a] transition-colors hover:-translate-y-0.5 transform duration-300">
                     <span class="material-symbols-outlined text-[24px]">search</span>
                 </button>
             </div>
 
             <!-- Search Input Box (Hidden by default) -->
-            <div id="search-container" class="absolute inset-0 bg-white/70 dark:bg-[#3a0d11]/80 backdrop-blur-xl rounded-full px-6 flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none z-50 transform translate-y-[-10px]">
+            <div id="search-container"
+                class="absolute inset-0 bg-white/70 dark:bg-[#3a0d11]/80 backdrop-blur-xl rounded-full px-6 flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none z-50 transform translate-y-[-10px]">
                 <div class="flex items-center w-full gap-3">
                     <span class="material-symbols-outlined text-[#e8304f] dark:text-[#ff6b82] text-[24px]">search</span>
-                    <input type="text" id="search-input" placeholder="Search the website..." 
+                    <input type="text" id="search-input" placeholder="Search the website..."
                         class="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 font-medium text-base">
                 </div>
-                <button onclick="toggleSearch()" class="flex items-center justify-center text-slate-500 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-all hover:rotate-90 transform duration-300">
+                <button onclick="toggleSearch()"
+                    class="flex items-center justify-center text-slate-500 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-all hover:rotate-90 transform duration-300">
                     <span class="material-symbols-outlined text-[24px]">close</span>
                 </button>
             </div>
 
             <div id="mobile-menu"
                 class="hidden md:flex flex-col md:flex-row absolute md:relative top-20 md:top-0 left-4 right-4 md:left-auto md:right-auto bg-white/70 dark:bg-[#3a0d11]/85 md:bg-transparent md:dark:bg-transparent backdrop-blur-xl md:backdrop-blur-none items-center gap-6 lg:gap-8 py-8 md:py-0 border border-white/40 dark:border-[#52191f]/50 md:border-none rounded-3xl md:rounded-none shadow-xl md:shadow-none transition-all duration-500 z-20">
-                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#family">FAMILY WISH</a>
-                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#ceremony">CEREMONY</a>
-                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#location">LOCATION</a>
-                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#gallery">GALLERY</a>
-                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#contact">CONTACT US</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#family">FAMILY WISH</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#ceremony">CEREMONY</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#location">LOCATION</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#gallery">GALLERY</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#contact">CONTACT US</a>
 
                 <!-- Theme Toggle Switch -->
                 <button onclick="toggleTheme()"
@@ -186,8 +194,8 @@
             <div
                 class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-red-dark/80 z-10 pointer-events-none">
             </div>
-            <img alt="Beautiful watercolor house on rolling hills" class="w-full h-full object-cover animate-slow-zoom"
-                data-alt="Watercolor house with hills background" src="assets/hero_title_watercolor.jpg" />
+            <img alt="Stylized 3D pink house illustration" class="w-full h-full object-cover animate-slow-zoom"
+                data-alt="3D pink house on clean background" src="assets/hero_title_watercolor.jpg" />
         </div>
         <div
             class="relative z-20 text-center px-6 py-6 md:px-10 md:py-8 w-[90%] max-w-[65rem] mx-auto rounded-3xl bg-white/10 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center mt-28 mb-10">
@@ -219,6 +227,11 @@
     <!-- Countdown Timer -->
     <section class="py-16 bg-soft-pink/30 dark:bg-primary/5">
         <div class="max-w-4xl mx-auto px-2 sm:px-4">
+            <div class="text-center mb-8">
+                <h2
+                    class="text-[12px] sm:text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                    Mark Your Calendars: The Countdown Begins...</h2>
+            </div>
             <div class="flex flex-row justify-center gap-2 sm:gap-6 md:gap-8 overflow-x-hidden">
                 <div class="flex flex-col items-center group">
                     <div
@@ -519,8 +532,10 @@
     <footer class="py-12 bg-white dark:bg-background-dark border-t border-primary/20">
         <div class="max-w-5xl mx-auto px-4 text-center">
             <div class="flex items-center justify-center gap-4 mb-6">
-                <img src="assets/logo_white_bg.jpg" alt="ApAA Logo" class="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm">
-                <span class="text-4xl tracking-wider text-[#F64C72] leading-none" style="font-family: 'Fredoka One', cursive; text-shadow: 1px 1px 0px #d63c5e, 2px 2px 0px #c53555, 3px 3px 0px #b62d4d, 4px 4px 0px #a42643, 5px 5px 0px #941e3a, 6px 6px 0px #821731, 7px 7px 0px #6e1027, 8px 8px 0px #5a0c1f, 12px 12px 20px rgba(0,0,0,0.5);">PRAMADAM</span>
+                <img src="assets/logo_white_bg.jpg" alt="ApAA Logo"
+                    class="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm">
+                <span class="text-4xl tracking-wider text-[#F64C72] leading-none"
+                    style="font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">PRAMADAM</span>
             </div>
             <p class="text-slate-500 mb-8 max-w-md mx-auto italic">"A home is built with love and dreams. We can't wait
                 to share ours with you."</p>
@@ -811,7 +826,7 @@
             const container = document.getElementById('search-container');
             const input = document.getElementById('search-input');
             const isHidden = container.classList.contains('opacity-0');
-            
+
             if (isHidden) {
                 container.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
                 container.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
@@ -827,18 +842,18 @@
         let highlightTimeout;
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('search-input');
-            if(searchInput) {
+            if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
                     clearTimeout(highlightTimeout);
                     highlightTimeout = setTimeout(() => {
                         handleSearch(e.target.value);
                     }, 300);
                 });
-                
+
                 searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         const firstMatch = document.querySelector('mark.search-highlight');
-                        if(firstMatch) {
+                        if (firstMatch) {
                             firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             toggleSearch(); // auto-close after jumping to result
                         }
@@ -851,7 +866,7 @@
             const marks = document.querySelectorAll('mark.search-highlight');
             marks.forEach(mark => {
                 const parent = mark.parentNode;
-                if(parent) {
+                if (parent) {
                     parent.replaceChild(document.createTextNode(mark.textContent), mark);
                     parent.normalize();
                 }
@@ -860,14 +875,14 @@
 
         function handleSearch(keyword) {
             clearHighlights();
-            if(!keyword.trim()) return;
-            
+            if (!keyword.trim()) return;
+
             const regex = new RegExp(`(${keyword})`, 'gi');
             const searchableElements = document.querySelectorAll('section h1, section h2, section h3, section p, section span, section a');
-            
+
             searchableElements.forEach(el => {
-                if(el.classList.contains('material-symbols-outlined') || (el.id && el.id.startsWith('cd-'))) return;
-                
+                if (el.classList.contains('material-symbols-outlined') || (el.id && el.id.startsWith('cd-'))) return;
+
                 Array.from(el.childNodes).forEach(node => {
                     if (node.nodeType === 3 && node.nodeValue.trim().length > 0) {
                         const text = node.nodeValue;

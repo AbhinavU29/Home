@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>PRAMADAM Housewarming Invitation</title>
-    <link rel="icon" href="assets/home_logo.png" type="image/png" />
+    <link rel="icon" href="assets/logo_white_bg.jpg" type="image/jpeg" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
@@ -109,8 +109,8 @@
         }
         function updateToggleUI(isDark) {
             const toggle = document.getElementById('theme-toggle-knob');
-            if(toggle) {
-                if(isDark) {
+            if (toggle) {
+                if (isDark) {
                     toggle.classList.add('translate-x-5');
                 } else {
                     toggle.classList.remove('translate-x-5');
@@ -126,41 +126,53 @@
 <body
     class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300">
     <!-- Navigation Bar -->
-    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-2">
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-500">
         <div
-            class="max-w-5xl mx-auto backdrop-blur-md bg-transparent border border-primary/20 rounded-full px-6 py-2 flex items-center justify-between shadow-md">
-            <div class="flex items-center gap-2">
-                <img src="assets/home_logo.png" alt="PRAMADAM Logo"
-                    class="h-10 w-10 rounded-full object-cover shadow-sm border border-primary/20 bg-white/80">
+            class="max-w-5xl mx-auto backdrop-blur-xl bg-white/30 dark:bg-[#3a0d11]/70 border border-white/40 dark:border-[#52191f]/50 rounded-full px-6 py-2 flex items-center justify-between shadow-lg relative overflow-hidden transition-all duration-500 ease-in-out">
+            <div class="flex items-center gap-4 z-20 relative">
+                <img src="assets/logo_white_bg.jpg" alt="PRAMADAM Logo"
+                    class="h-10 w-10 rounded-full object-cover shadow-sm border border-primary/20 bg-white/80 transition-transform hover:scale-105 duration-300">
+                <button aria-label="Search" onclick="toggleSearch()" class="flex items-center justify-center text-[#e8304f] dark:text-[#ff6b82] hover:text-[#c4203d] dark:hover:text-[#ff8a9a] transition-colors hover:-translate-y-0.5 transform duration-300">
+                    <span class="material-symbols-outlined text-[24px]">search</span>
+                </button>
+            </div>
+
+            <!-- Search Input Box (Hidden by default) -->
+            <div id="search-container" class="absolute inset-0 bg-white/70 dark:bg-[#3a0d11]/80 backdrop-blur-xl rounded-full px-6 flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none z-50 transform translate-y-[-10px]">
+                <div class="flex items-center w-full gap-3">
+                    <span class="material-symbols-outlined text-[#e8304f] dark:text-[#ff6b82] text-[24px]">search</span>
+                    <input type="text" id="search-input" placeholder="Search the website..." 
+                        class="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 font-medium text-base">
+                </div>
+                <button onclick="toggleSearch()" class="flex items-center justify-center text-slate-500 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-all hover:rotate-90 transform duration-300">
+                    <span class="material-symbols-outlined text-[24px]">close</span>
+                </button>
             </div>
 
             <div id="mobile-menu"
-                class="hidden md:flex flex-col md:flex-row absolute md:relative top-20 md:top-0 left-4 right-4 md:left-auto md:right-auto bg-white/95 dark:bg-background-dark/95 md:bg-transparent backdrop-blur-md items-center gap-6 md:gap-8 py-8 md:py-0 border md:border-none border-primary/10 rounded-3xl shadow-xl md:shadow-none font-semibold">
-                <a class="text-sm font-semibold hover:text-primary transition-colors uppercase" href="#family">FAMILY
-                    WISH</a>
-                <a class="text-sm font-semibold hover:text-primary transition-colors uppercase"
-                    href="#ceremony">CEREMONY</a>
-                <a class="text-sm font-semibold hover:text-primary transition-colors uppercase"
-                    href="#location">LOCATION</a>
-                <a class="text-sm font-semibold hover:text-primary transition-colors uppercase"
-                    href="#gallery">GALLERY</a>
-                <a class="text-sm font-semibold hover:text-primary transition-colors uppercase" href="#contact">CONTACT
-                    US</a>
+                class="hidden md:flex flex-col md:flex-row absolute md:relative top-20 md:top-0 left-4 right-4 md:left-auto md:right-auto bg-white/70 dark:bg-[#3a0d11]/85 md:bg-transparent md:dark:bg-transparent backdrop-blur-xl md:backdrop-blur-none items-center gap-6 lg:gap-8 py-8 md:py-0 border border-white/40 dark:border-[#52191f]/50 md:border-none rounded-3xl md:rounded-none shadow-xl md:shadow-none transition-all duration-500 z-20">
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#family">FAMILY WISH</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#ceremony">CEREMONY</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#location">LOCATION</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#gallery">GALLERY</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest" href="#contact">CONTACT US</a>
 
                 <!-- Theme Toggle Switch -->
-                <button onclick="toggleTheme()" class="hidden md:flex w-[48px] h-7 bg-[#242B42] rounded-full p-1 border border-white/10 transition-colors drop-shadow-md relative items-center cursor-pointer" aria-label="Toggle Dark Mode">
-                    <div id="theme-toggle-knob" class="w-5 h-5 bg-[#FCECD8] rounded-full transition-transform duration-300 shadow-sm ease-out drop-shadow-sm"></div>
+                <button onclick="toggleTheme()"
+                    class="hidden md:flex w-[48px] h-7 bg-[#242B42] dark:bg-[#1f090c] rounded-full p-1 border border-white/20 dark:border-[#52191f]/50 transition-colors drop-shadow-md relative items-center cursor-pointer ml-2"
+                    aria-label="Toggle Dark Mode">
+                    <div id="theme-toggle-knob"
+                        class="w-5 h-5 bg-[#FCECD8] rounded-full transition-transform duration-500 shadow-sm ease-out drop-shadow-sm">
+                    </div>
                 </button>
-
-
             </div>
 
-            <div class="flex items-center gap-4 md:hidden">
+            <div class="flex items-center gap-4 md:hidden z-20">
                 <button onclick="setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')"
-                    class="flex items-center justify-center text-slate-900 dark:text-white hover:text-primary transition-colors">
+                    class="flex items-center justify-center text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors">
                     <span class="material-symbols-outlined text-[24px]">contrast</span>
                 </button>
-                <button id="mobile-menu-btn" class="text-primary">
+                <button id="mobile-menu-btn" class="text-primary dark:text-white transition-colors">
                     <span class="material-symbols-outlined text-3xl">menu</span>
                 </button>
             </div>
@@ -263,8 +275,9 @@
 
                 <div class="flex flex-col items-center justify-center gap-2 relative z-10">
                     <p class="text-sm tracking-widest uppercase font-bold text-slate-500">With Love & Regards,</p>
-                    <h3 class="text-[25px] font-extrabold text-[#e8304f] mt-2 tracking-tight drop-shadow-sm">
-                        Pramod U & Ambika E</h3>
+                    <h3
+                        class="text-xl sm:text-[25px] font-extrabold text-[#e8304f] mt-2 tracking-tight drop-shadow-sm leading-tight px-2">
+                        Pramod U & <span class="whitespace-nowrap">Ambika E</span></h3>
                     <p class="text-slate-600 dark:text-slate-400 font-medium">and Family</p>
                 </div>
             </div>
@@ -505,9 +518,9 @@
     <!-- Footer -->
     <footer class="py-12 bg-white dark:bg-background-dark border-t border-primary/20">
         <div class="max-w-5xl mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-2 mb-6">
-                <img src="logo.png" alt="PRAMADAM Logo" class="h-10 w-auto">
-                <span class="text-xl font-bold tracking-tight">Housewarming</span>
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <img src="assets/logo_white_bg.jpg" alt="ApAA Logo" class="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm">
+                <span class="text-4xl tracking-wider text-[#F64C72] leading-none" style="font-family: 'Fredoka One', cursive; text-shadow: 1px 1px 0px #d63c5e, 2px 2px 0px #c53555, 3px 3px 0px #b62d4d, 4px 4px 0px #a42643, 5px 5px 0px #941e3a, 6px 6px 0px #821731, 7px 7px 0px #6e1027, 8px 8px 0px #5a0c1f, 12px 12px 20px rgba(0,0,0,0.5);">PRAMADAM</span>
             </div>
             <p class="text-slate-500 mb-8 max-w-md mx-auto italic">"A home is built with love and dreams. We can't wait
                 to share ours with you."</p>
@@ -792,6 +805,82 @@
             setInterval(updateCountdown, 1000);
             updateCountdown();
         });
+
+        // Search Functionality
+        function toggleSearch() {
+            const container = document.getElementById('search-container');
+            const input = document.getElementById('search-input');
+            const isHidden = container.classList.contains('opacity-0');
+            
+            if (isHidden) {
+                container.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                container.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                setTimeout(() => input.focus(), 300);
+            } else {
+                container.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                container.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                clearHighlights();
+                input.value = '';
+            }
+        }
+
+        let highlightTimeout;
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(highlightTimeout);
+                    highlightTimeout = setTimeout(() => {
+                        handleSearch(e.target.value);
+                    }, 300);
+                });
+                
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const firstMatch = document.querySelector('mark.search-highlight');
+                        if(firstMatch) {
+                            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            toggleSearch(); // auto-close after jumping to result
+                        }
+                    }
+                });
+            }
+        });
+
+        function clearHighlights() {
+            const marks = document.querySelectorAll('mark.search-highlight');
+            marks.forEach(mark => {
+                const parent = mark.parentNode;
+                if(parent) {
+                    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+                    parent.normalize();
+                }
+            });
+        }
+
+        function handleSearch(keyword) {
+            clearHighlights();
+            if(!keyword.trim()) return;
+            
+            const regex = new RegExp(`(${keyword})`, 'gi');
+            const searchableElements = document.querySelectorAll('section h1, section h2, section h3, section p, section span, section a');
+            
+            searchableElements.forEach(el => {
+                if(el.classList.contains('material-symbols-outlined') || (el.id && el.id.startsWith('cd-'))) return;
+                
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === 3 && node.nodeValue.trim().length > 0) {
+                        const text = node.nodeValue;
+                        if (regex.test(text)) {
+                            const newHtml = text.replace(regex, `<mark class="search-highlight bg-primary/20 text-primary dark:bg-primary/50 dark:text-white rounded-md px-1 py-0.5 font-bold shadow-sm transition-all">$1</mark>`);
+                            const wrapper = document.createElement('span');
+                            wrapper.innerHTML = newHtml;
+                            node.replaceWith(...wrapper.childNodes);
+                        }
+                    }
+                });
+            });
+        }
     </script>
 </body>
 

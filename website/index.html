@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>PRAMADAM Housewarming Invitation</title>
+    <title>PRANAVAM Housewarming Invitation</title>
     <link rel="icon" href="assets/logo_white_bg.jpg" type="image/jpeg" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
@@ -131,7 +131,7 @@
         <div
             class="max-w-5xl mx-auto backdrop-blur-xl bg-white/30 dark:bg-[#3a0d11]/70 border border-white/40 dark:border-[#52191f]/50 rounded-full px-6 py-2 flex items-center justify-between shadow-lg relative overflow-hidden transition-all duration-500 ease-in-out">
             <div class="flex items-center gap-4 z-20 relative">
-                <img src="assets/logo_white_bg.jpg" alt="PRAMADAM Logo"
+                <img src="assets/logo_white_bg.jpg" alt="PRANAVAM Logo"
                     class="h-10 w-10 rounded-full object-cover shadow-sm border border-primary/20 bg-white/80 transition-transform hover:scale-105 duration-300">
                 <button aria-label="Search" onclick="toggleSearch()"
                     class="flex items-center justify-center text-[#e8304f] dark:text-[#ff6b82] hover:text-[#c4203d] dark:hover:text-[#ff8a9a] transition-colors hover:-translate-y-0.5 transform duration-300">
@@ -208,7 +208,7 @@
                 <span
                     class="text-[12vw] sm:text-6xl md:text-[6.5rem] lg:text-[8rem] leading-none text-[#F64C72] mt-2 tracking-tight font-extrabold block w-full text-center"
                     style="text-shadow: 0px 8px 20px rgba(0,0,0,0.35);">
-                    PRAMADAM</span>
+                    PRANAVAM</span>
             </h1>
             <p class="text-base md:text-lg font-normal mb-8 max-w-lg mx-auto leading-relaxed tracking-wide text-[#5F6F7F]"
                 style="font-family: 'Inter', sans-serif;">
@@ -540,7 +540,7 @@
                 <img src="assets/logo_white_bg.jpg" alt="ApAA Logo"
                     class="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm">
                 <span class="text-4xl tracking-wider text-[#F64C72] leading-none"
-                    style="font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">PRAMADAM</span>
+                    style="font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">PRANAVAM</span>
             </div>
             <p class="text-slate-500 mb-8 max-w-md mx-auto italic">"A home is built with love and dreams. We can't wait
                 to share ours with you."</p>
@@ -614,7 +614,7 @@
                     <span class="material-symbols-outlined">favorite</span>
                 </a>
             </div>
-            <p class="text-xs text-slate-400 uppercase tracking-widest">© 2026 PRAMADAM. All Rights Reserved.</p>
+            <p class="text-xs text-slate-400 uppercase tracking-widest">© 2026 PRANAVAM. All Rights Reserved.</p>
         </div>
     </footer>
 
@@ -771,9 +771,9 @@
 
         function addToSpecificCalendar(provider) {
             const event = {
-                title: 'PRAMADAM Housewarming Ceremony',
+                title: 'PRANAVAM Housewarming Ceremony',
                 location: '123 Elegance Boulevard, Golden Hills, CA 90210',
-                description: 'Join us as we celebrate PRAMADAM! Traditional rituals followed by brunch.',
+                description: 'Join us as we celebrate PRANAVAM! Traditional rituals followed by brunch.',
                 start: '20260509T033000Z',
                 end: '20260509T073000Z'
             };
@@ -798,7 +798,7 @@
                     const icsContent = [
                         'BEGIN:VCALENDAR',
                         'VERSION:2.0',
-                        'PRODID:-//PRAMADAM Housewarming//EN',
+                        'PRODID:-//PRANAVAM Housewarming//EN',
                         'BEGIN:VEVENT',
                         `UID:${new Date().getTime()}@apaa-housewarming.com`,
                         `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
@@ -814,7 +814,7 @@
                     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
                     const link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.setAttribute('download', 'PRAMADAM_Housewarming.ics');
+                    link.setAttribute('download', 'PRANAVAM_Housewarming.ics');
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);

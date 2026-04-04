@@ -38,11 +38,25 @@
                     },
                     animation: {
                         'slow-zoom': 'slowZoom 20s ease-in-out infinite alternate',
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'shimmer': 'shimmer 2s infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite alternate',
                     },
                     keyframes: {
                         slowZoom: {
                             '0%': { transform: 'scale(1)' },
                             '100%': { transform: 'scale(1.15)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        shimmer: {
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        pulseGlow: {
+                            '0%': { opacity: '0.3', transform: 'scale(0.95)' },
+                            '100%': { opacity: '0.6', transform: 'scale(1.05)' }
                         }
                     },
                     borderRadius: {
@@ -125,7 +139,51 @@
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300">
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300 overflow-hidden">
+
+    <!-- Welcome Screen Overlay -->
+    <div id="welcome-screen" class="fixed inset-0 z-[999] bg-[#fdfaf9] dark:bg-[#360e12] flex flex-col items-center justify-center transition-all duration-1000 ease-in-out transform">
+        <!-- Decorative Top Motif -->
+        <div class="absolute top-0 w-full h-32 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 50% -50%, #d4af37 0%, transparent 70%);"></div>
+
+        <div class="relative z-10 flex flex-col items-center text-center px-4 animate-fade-in-up">
+            <h2 class="text-[#d4af37] text-3xl md:text-4xl mb-6 tracking-widest font-bold" style="font-family: 'Great Vibes', cursive;">You're Invited</h2>
+            
+            <div class="relative w-48 h-48 md:w-64 md:h-64 mb-8 flex justify-center items-center">
+                <!-- Gentle Glow -->
+                <div class="absolute inset-0 bg-[#fb4c74]/20 rounded-full blur-2xl animate-pulse-glow"></div>
+                <img src="assets/ganesha.png" alt="Lord Ganesha" class="relative z-10 w-full h-full object-contain filter drop-shadow-xl hover:scale-105 transition-transform duration-500 rounded-2xl" />
+            </div>
+
+            <h1 class="text-3xl md:text-5xl text-[#2b0609] dark:text-[#fdf8f1] mb-4 font-extrabold tracking-tight" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                Welcome
+            </h1>
+            <p class="text-lg md:text-xl text-[#fb4c74] mb-10 font-medium" style="font-family: 'Poppins', sans-serif;">
+                Open our invitation to begin
+            </p>
+
+            <button onclick="closeWelcomeScreen()" class="group relative px-10 py-4 bg-gradient-to-r from-[#fb4c74] to-[#e8304f] text-white rounded-full font-bold text-lg shadow-[0_0_20px_rgba(251,76,116,0.4)] hover:shadow-[0_0_30px_rgba(251,76,116,0.6)] hover:-translate-y-1 overflow-hidden transition-all duration-300">
+                <span class="relative z-10 flex items-center gap-2">
+                    Open Invitation 
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </span>
+                <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+            </button>
+        </div>
+
+        <!-- Decorative Bottom Motif -->
+        <div class="absolute bottom-0 w-full h-32 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 50% 150%, #fb4c74 0%, transparent 70%);"></div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b8f72cb3.mp3?filename=soft-background-106517.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <button id="musicToggle" onclick="toggleMusic()" class="hidden fixed bottom-6 left-6 z-50 w-12 h-12 bg-white/80 dark:bg-[#3a0d11]/80 backdrop-blur-md border border-[#fb4c74]/20 rounded-full shadow-lg flex items-center justify-center text-[#fb4c74] hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined" id="musicIcon">music_note</span>
+    </button>
     <!-- Navigation Bar -->
     <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-500">
         <div
@@ -490,7 +548,7 @@
                 <div class="relative">
                     <!-- Expandable share menu -->
                     <div id="share-menu"
-                        class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-white dark:bg-[#3a0d11] border border-primary/20 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex gap-2 p-3 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 z-50 flex-row items-center">
+                        class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[260px] sm:w-max bg-white dark:bg-[#3a0d11] border border-primary/20 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-wrap justify-center gap-2 sm:gap-3 p-3 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 z-50 items-center">
                         <button
                             onclick="window.open('https://api.whatsapp.com/send?text=You\'re invited to our housewarming! Check it out: ' + window.location.href, '_blank'); toggleShareMenu();"
                             class="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white flex items-center justify-center transition-colors shadow-sm"
@@ -946,6 +1004,43 @@
             }).catch(err => {
                 console.error('Could not copy URL: ', err);
             });
+        }
+
+        // Welcome Screen & Music Logic
+        function closeWelcomeScreen() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 1000); // Wait for transition
+
+            // Play music on interaction
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                bgMusic.volume = 0.5; // Soft volume
+                bgMusic.play().then(() => {
+                    document.getElementById('musicToggle').classList.remove('hidden');
+                }).catch(err => {
+                    console.error("Audio playback failed:", err);
+                    document.getElementById('musicIcon').textContent = 'music_off';
+                    document.getElementById('musicToggle').classList.remove('hidden');
+                });
+            } else {
+                document.getElementById('musicToggle').classList.remove('hidden');
+            }
+        }
+
+        function toggleMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            const musicIcon = document.getElementById('musicIcon');
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicIcon.textContent = 'music_note';
+            } else {
+                bgMusic.pause();
+                musicIcon.textContent = 'music_off';
+            }
         }
     </script>
 </body>

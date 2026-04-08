@@ -88,17 +88,18 @@
         .premium-interactive-btn {
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
             transform-origin: center;
         }
 
         .premium-interactive-btn:hover {
-            transform: scale(1.03) translateY(-2px);
-            box-shadow: 0 10px 30px rgba(232, 48, 79, 0.4), 0 0 20px rgba(232, 48, 79, 0.2) inset;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(232, 48, 79, 0.5), 0 0 20px rgba(232, 48, 79, 0.3) inset;
         }
 
         .premium-interactive-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.95) !important;
+            transition: transform 0.1s ease-out;
             box-shadow: 0 5px 15px rgba(232, 48, 79, 0.3);
         }
 
@@ -256,7 +257,7 @@
                 Open our invitation to begin
             </p>
 
-            <button onclick="handlePremiumClick(event, closeWelcomeScreen)" class="group relative px-10 py-4 bg-gradient-to-r from-[#fb4c74] to-[#e8304f] text-white rounded-full font-bold text-lg shadow-[0_0_20px_rgba(251,76,116,0.4)] hover:shadow-[0_0_30px_rgba(251,76,116,0.6)] premium-interactive-btn border border-transparent">
+            <button onclick="handlePremiumClick(event, closeWelcomeScreen, true)" class="group relative px-10 py-4 bg-gradient-to-r from-[#fb4c74] to-[#e8304f] text-white rounded-full font-bold text-lg shadow-[0_0_20px_rgba(251,76,116,0.4)] hover:shadow-[0_0_30px_rgba(251,76,116,0.6)] premium-interactive-btn border border-transparent">
                 <span class="relative z-10 flex items-center gap-2 btn-text-content transition-opacity duration-300">
                     Open Invitation 
                     <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -620,10 +621,13 @@
                         placeholder="Your Message" rows="4"></textarea>
                 </div>
                 <div class="text-center">
-                    <button
-                        class="bg-slate-900 dark:bg-primary text-white px-12 py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity"
+                    <button onclick="if(document.getElementById('contact-form').checkValidity()){ handlePremiumClick(event, () => document.getElementById('contact-form').requestSubmit(), true); } else { if(navigator.vibrate) navigator.vibrate([10, 30, 20]); }"
+                        class="bg-slate-900 dark:bg-primary text-white px-12 py-4 rounded-full font-bold shadow-[0_4px_14px_0_rgba(246,76,114,0.39)] hover:opacity-90 transition-opacity premium-interactive-btn border border-transparent"
                         type="submit">
-                        Send Message
+                        <span class="relative z-10 flex items-center justify-center gap-2 btn-text-content transition-opacity duration-300">
+                            Send Message
+                        </span>
+                        <div class="btn-spinner"></div>
                     </button>
                 </div>
             </form>
@@ -1105,11 +1109,20 @@
         }
 
         // Premium Button Click Logic
-        function handlePremiumClick(event, callback) {
+        function handlePremiumClick(event, callback, isImportant = false) {
             event.preventDefault();
             const btn = event.currentTarget;
             
-            // Haptic/vibrate class
+            // Hardware Haptic Feedback (Mobile API)
+            if (navigator.vibrate) {
+                if (isImportant) {
+                    navigator.vibrate([10, 20, 10]); // Medium patterned impact
+                } else {
+                    navigator.vibrate(10); // Light short impact
+                }
+            }
+
+            // Visual Haptic/vibrate class (fallback & reinforcement)
             btn.classList.add('vibrate');
             setTimeout(() => btn.classList.remove('vibrate'), 200);
 

@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>PRANAVAM Housewarming Invitation</title>
+    <link rel="icon" href="assets/logo_white_bg.jpg" type="image/jpeg" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Fredoka+One&amp;family=Great+Vibes&amp;family=Italianno&amp;family=Poppins:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e8304f",
+                        "background-light": "#fdfaf9",
+                        "background-dark": "#360e12",
+                        "surface-dark": "#5c161a",
+                        "red-dark": "#2b0609",
+                        "pastel-cream": "#fdf8f1",
+                        "pastel-gold": "#d4af37",
+                        "soft-pink": "#fceef0",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    animation: {
+                        'slow-zoom': 'slowZoom 20s ease-in-out infinite alternate',
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'shimmer': 'shimmer 2s infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        slowZoom: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.15)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        shimmer: {
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        pulseGlow: {
+                            '0%': { opacity: '0.3', transform: 'scale(0.95)' },
+                            '100%': { opacity: '0.6', transform: 'scale(1.05)' }
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(253, 250, 249, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .glass-nav {
+            background: rgba(33, 17, 20, 0.8);
+        }
+
+        /* Premium Interactive Button Styles */
+        .premium-interactive-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-origin: center;
+        }
+
+        .premium-interactive-btn:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(232, 48, 79, 0.4), 0 0 20px rgba(232, 48, 79, 0.2) inset;
+        }
+
+        .premium-interactive-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 5px 15px rgba(232, 48, 79, 0.3);
+        }
+
+        .premium-interactive-btn.vibrate {
+            animation: haptic-vibrate 0.2s linear;
+        }
+
+        @keyframes haptic-vibrate {
+            0% { transform: scale(0.97) translate(0); }
+            20% { transform: scale(0.97) translate(-2px, 2px); }
+            40% { transform: scale(0.97) translate(-2px, -2px); }
+            60% { transform: scale(0.97) translate(2px, 2px); }
+            80% { transform: scale(0.97) translate(2px, -2px); }
+            100% { transform: scale(0.97) translate(0); }
+        }
+
+        .premium-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple-anim 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .premium-sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            opacity: 0;
+            animation: sparkle-anim 0.8s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes sparkle-anim {
+            0% { transform: scale(0) translate(0, 0); opacity: 1; }
+            100% { transform: scale(1) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        .btn-spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+        }
+
+        .btn-loading .btn-spinner {
+            display: block;
+        }
+
+        .btn-loading .btn-text-content {
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+    <script>
+        // Apply theme based on user preference or system default
+        const applyTheme = () => {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        applyTheme();
+
+        // Listen for system theme changes if set to system
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!('theme' in localStorage)) {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // Toggle theme function
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                localStorage.theme = 'dark';
+            } else if (mode === 'light') {
+                localStorage.theme = 'light';
+            } else {
+                localStorage.removeItem('theme');
+            }
+            applyTheme();
+        }
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+            updateToggleUI(!isDark);
+        }
+        function updateToggleUI(isDark) {
+            const toggle = document.getElementById('theme-toggle-knob');
+            if (toggle) {
+                if (isDark) {
+                    toggle.classList.add('translate-x-5');
+                } else {
+                    toggle.classList.remove('translate-x-5');
+                }
+            }
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            updateToggleUI(document.documentElement.classList.contains('dark'));
+        });
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300 overflow-hidden">
+
+    <!-- Welcome Screen Overlay -->
+    <div id="welcome-screen" class="fixed inset-0 z-[999] bg-[#fdfaf9] dark:bg-[#360e12] flex flex-col items-center justify-center transition-all duration-1000 ease-in-out transform">
+        <!-- Decorative Top Motif -->
+        <div class="absolute top-0 w-full h-32 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 50% -50%, #d4af37 0%, transparent 70%);"></div>
+
+        <div class="relative z-10 flex flex-col items-center text-center px-4 animate-fade-in-up">
+            <h2 class="text-[#d4af37] text-3xl md:text-4xl mb-6 tracking-widest font-bold" style="font-family: 'Great Vibes', cursive;">You're Invited</h2>
+            
+            <div class="relative w-48 h-48 md:w-64 md:h-64 mb-8 flex justify-center items-center">
+                <!-- Gentle Glow -->
+                <div class="absolute inset-0 bg-[#fb4c74]/20 rounded-full blur-2xl animate-pulse-glow"></div>
+                <img src="assets/ganesha.png" alt="Lord Ganesha" class="relative z-10 w-full h-full object-contain filter drop-shadow-xl hover:scale-105 transition-transform duration-500 rounded-2xl" />
+            </div>
+
+            <h1 class="text-3xl md:text-5xl text-[#2b0609] dark:text-[#fdf8f1] mb-4 font-extrabold tracking-tight" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                Welcome
+            </h1>
+            <p class="text-lg md:text-xl text-[#fb4c74] mb-10 font-medium" style="font-family: 'Poppins', sans-serif;">
+                Open our invitation to begin
+            </p>
+
+            <button onclick="handlePremiumClick(event, closeWelcomeScreen)" class="group relative px-10 py-4 bg-gradient-to-r from-[#fb4c74] to-[#e8304f] text-white rounded-full font-bold text-lg shadow-[0_0_20px_rgba(251,76,116,0.4)] hover:shadow-[0_0_30px_rgba(251,76,116,0.6)] premium-interactive-btn border border-transparent">
+                <span class="relative z-10 flex items-center gap-2 btn-text-content transition-opacity duration-300">
+                    Open Invitation 
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </span>
+                <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                <div class="btn-spinner"></div>
+            </button>
+        </div>
+
+        <!-- Decorative Bottom Motif -->
+        <div class="absolute bottom-0 w-full h-32 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 50% 150%, #fb4c74 0%, transparent 70%);"></div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b8f72cb3.mp3?filename=soft-background-106517.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <button id="musicToggle" onclick="toggleMusic()" class="hidden fixed bottom-6 left-6 z-50 w-12 h-12 bg-white/80 dark:bg-[#3a0d11]/80 backdrop-blur-md border border-[#fb4c74]/20 rounded-full shadow-lg flex items-center justify-center text-[#fb4c74] hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined" id="musicIcon">music_note</span>
+    </button>
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-500">
+        <div
+            class="max-w-5xl mx-auto backdrop-blur-xl bg-white/30 dark:bg-[#3a0d11]/70 border border-white/40 dark:border-[#52191f]/50 rounded-full px-6 py-2 flex items-center justify-between shadow-lg relative overflow-hidden transition-all duration-500 ease-in-out">
+            <div class="flex items-center gap-4 z-20 relative">
+                <img src="assets/logo_white_bg.jpg" alt="PRANAVAM Logo"
+                    class="h-10 w-10 rounded-full object-cover shadow-sm border border-primary/20 bg-white/80 transition-transform hover:scale-105 duration-300">
+                <button aria-label="Search" onclick="toggleSearch()"
+                    class="flex items-center justify-center text-[#e8304f] dark:text-[#ff6b82] hover:text-[#c4203d] dark:hover:text-[#ff8a9a] transition-colors hover:-translate-y-0.5 transform duration-300">
+                    <span class="material-symbols-outlined text-[24px]">search</span>
+                </button>
+            </div>
+
+            <!-- Search Input Box (Hidden by default) -->
+            <div id="search-container"
+                class="absolute inset-0 bg-white/70 dark:bg-[#3a0d11]/80 backdrop-blur-xl rounded-full px-6 flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none z-50 transform translate-y-[-10px]">
+                <div class="flex items-center w-full gap-3">
+                    <span class="material-symbols-outlined text-[#e8304f] dark:text-[#ff6b82] text-[24px]">search</span>
+                    <input type="text" id="search-input" placeholder="Search the website..."
+                        class="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 font-medium text-base">
+                </div>
+                <button onclick="toggleSearch()"
+                    class="flex items-center justify-center text-slate-500 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-all hover:rotate-90 transform duration-300">
+                    <span class="material-symbols-outlined text-[24px]">close</span>
+                </button>
+            </div>
+
+            <div id="mobile-menu"
+                class="hidden md:flex flex-col md:flex-row absolute md:relative top-20 md:top-0 left-4 right-4 md:left-auto md:right-auto bg-white/70 dark:bg-[#3a0d11]/85 md:bg-transparent md:dark:bg-transparent backdrop-blur-xl md:backdrop-blur-none items-center gap-6 lg:gap-8 py-8 md:py-0 border border-white/40 dark:border-[#52191f]/50 md:border-none rounded-3xl md:rounded-none shadow-xl md:shadow-none transition-all duration-500 z-20">
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#family">FAMILY WISH</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#ceremony">CEREMONY</a>
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#location">LOCATION</a>
+
+                <a class="text-[0.85rem] font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors uppercase tracking-widest"
+                    href="#contact">CONTACT US</a>
+
+                <!-- Theme Toggle Switch -->
+                <button onclick="toggleTheme()"
+                    class="hidden md:flex w-[48px] h-7 bg-[#242B42] dark:bg-[#1f090c] rounded-full p-1 border border-white/20 dark:border-[#52191f]/50 transition-colors drop-shadow-md relative items-center cursor-pointer ml-2"
+                    aria-label="Toggle Dark Mode">
+                    <div id="theme-toggle-knob"
+                        class="w-5 h-5 bg-[#FCECD8] rounded-full transition-transform duration-500 shadow-sm ease-out drop-shadow-sm">
+                    </div>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-4 md:hidden z-20">
+                <button onclick="setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')"
+                    class="flex items-center justify-center text-slate-800 dark:text-white hover:text-primary dark:hover:text-[#ff8a9a] transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">contrast</span>
+                </button>
+                <button id="mobile-menu-btn" class="text-primary dark:text-white transition-colors">
+                    <span class="material-symbols-outlined text-3xl">menu</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+        class="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-background-light dark:bg-background-dark">
+        <!-- <div class="absolute inset-0 z-0 overflow-hidden">
+            <div
+                class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-red-dark/80 z-10 pointer-events-none">
+            </div>
+            <img alt="Stylized 3D pink house illustration" class="w-full h-full object-cover animate-slow-zoom"
+                data-alt="3D pink house on clean background" src="assets/hero_title_3d_house.jpg" />
+        </div> -->
+        <div
+            class="relative z-20 text-center px-6 py-6 md:px-10 md:py-8 w-[90%] max-w-[65rem] mx-auto rounded-3xl bg-white/10 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center mt-28 mb-10">
+            <h1 class="text-white leading-tight mb-4 flex flex-col items-center gap-1"
+                style="font-family: 'Fredoka One', cursive; text-shadow: 2px 4px 8px rgba(0,0,0,0.6), 0px 0px 10px rgba(0,0,0,0.4);">
+                <span class="text-[26px] md:text-[34px] lg:text-[40px] font-medium opacity-90">
+                    All are welcome to my home!
+                </span>
+                <span
+                    class="text-[12vw] sm:text-6xl md:text-[6.5rem] lg:text-[8rem] leading-none text-[#F64C72] mt-2 tracking-tight font-extrabold block w-full text-center"
+                    style="text-shadow: 0px 8px 20px rgba(0,0,0,0.35);">
+                    PRANAVAM</span>
+            </h1>
+            <p class="text-base md:text-lg font-normal mb-8 max-w-lg mx-auto leading-relaxed tracking-wide text-[#5F6F7F]"
+                style="font-family: 'Inter', sans-serif;">
+                Join us for a warm housewarming celebration as we turn a new house into a home filled with love
+                and laughter.
+            </p>
+            <div class="flex justify-center w-full mb-2">
+                <a onclick="handlePremiumClick(event, () => document.getElementById('ceremony').scrollIntoView({behavior: 'smooth'}))" class="w-auto inline-flex bg-[#F64C72] hover:bg-[#DE3C5E] text-white shadow-[0_4px_14px_0_rgba(246,76,114,0.39)] px-10 py-3 md:px-12 md:py-3.5 rounded-full font-semibold transition-all text-base md:text-lg items-center justify-center mx-auto premium-interactive-btn cursor-pointer"
+                    style="font-family: 'Poppins', sans-serif;">
+                    <span class="relative z-10 flex items-center gap-2 btn-text-content transition-opacity duration-300">
+                        View Details
+                    </span>
+                    <div class="btn-spinner"></div>
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+            <span class="material-symbols-outlined text-white text-3xl">keyboard_double_arrow_down</span>
+        </div>
+    </section>
+
+    <!-- Countdown Timer -->
+    <section class="py-16 bg-soft-pink/30 dark:bg-primary/5">
+        <div class="max-w-4xl mx-auto px-2 sm:px-4">
+            <div class="text-center mb-8">
+                <h2
+                    class="text-[12px] sm:text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                    Mark Your Calendars: The Countdown Begins...</h2>
+            </div>
+            <div class="flex flex-row justify-center gap-2 sm:gap-6 md:gap-8 overflow-x-hidden">
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full border-[3px] sm:border-4 border-primary/20 bg-white dark:bg-background-dark flex items-center justify-center shadow-inner group-hover:border-primary transition-colors">
+                        <span class="text-2xl sm:text-3xl md:text-4xl font-black text-primary" id="cd-days">124</span>
+                    </div>
+                    <span
+                        class="mt-2 sm:mt-3 text-[10px] sm:text-sm font-bold uppercase tracking-widest text-slate-500">Days</span>
+                </div>
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full border-[3px] sm:border-4 border-primary/20 bg-white dark:bg-background-dark flex items-center justify-center shadow-inner group-hover:border-primary transition-colors">
+                        <span class="text-2xl sm:text-3xl md:text-4xl font-black text-primary" id="cd-hours">09</span>
+                    </div>
+                    <span
+                        class="mt-2 sm:mt-3 text-[10px] sm:text-sm font-bold uppercase tracking-widest text-slate-500">Hours</span>
+                </div>
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full border-[3px] sm:border-4 border-primary/20 bg-white dark:bg-background-dark flex items-center justify-center shadow-inner group-hover:border-primary transition-colors">
+                        <span class="text-2xl sm:text-3xl md:text-4xl font-black text-primary" id="cd-minutes">45</span>
+                    </div>
+                    <span
+                        class="mt-2 sm:mt-3 text-[10px] sm:text-sm font-bold uppercase tracking-widest text-slate-500">Minutes</span>
+                </div>
+                <div class="flex flex-col items-center group">
+                    <div
+                        class="w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full border-[3px] sm:border-4 border-primary/20 bg-white dark:bg-background-dark flex items-center justify-center shadow-inner group-hover:border-primary transition-colors">
+                        <span class="text-2xl sm:text-3xl md:text-4xl font-black text-primary" id="cd-seconds">22</span>
+                    </div>
+                    <span
+                        class="mt-2 sm:mt-3 text-[10px] sm:text-sm font-bold uppercase tracking-widest text-slate-500">Seconds</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Family Wish Section -->
+    <section class="py-24 px-4 bg-background-light dark:bg-background-dark" id="family">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mb-10">
+                <span class="material-symbols-outlined text-primary text-5xl mb-4">volunteer_activism</span>
+                <h2 class="text-4xl font-extrabold mb-4">A Warm Welcome</h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+            </div>
+
+            <div
+                class="bg-[#FCFAFA] dark:bg-red-dark/50 rounded-3xl p-10 md:p-16 border border-[#EFD9D9] dark:border-red-dark shadow-xl relative overflow-hidden">
+
+                <p class="text-[20px] text-[#6A768F] dark:text-[#E2E8F0] mb-10 relative z-10 text-center leading-relaxed italic font-bold tracking-wide"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                    “With great happiness, we invite you to our housewarming ceremony. Your gracious presence and
+                    blessings will make this new beginning truly meaningful. We look forward to welcoming you to our
+                    home.”
+                </p>
+
+                <div class="flex flex-col items-center justify-center gap-2 relative z-10">
+                    <p class="text-sm tracking-widest uppercase font-bold text-slate-500">With Love & Regards,</p>
+                    <h3
+                        class="text-xl sm:text-[25px] font-extrabold text-[#e8304f] mt-2 tracking-tight drop-shadow-sm leading-tight px-2">
+                        Pramod U & <span class="whitespace-nowrap">Ambika E</span></h3>
+                    <p class="text-slate-600 dark:text-slate-400 font-medium">and Family</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ceremony Details -->
+    <section class="py-24 px-4" id="ceremony">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Ceremony Details</h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+            </div>
+            <div
+                class="bg-white dark:bg-red-dark rounded-xl overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-primary/20">
+                <div class="lg:w-1/2 relative h-64 lg:h-auto">
+                    <img alt="Elegant boiling pot ceremony" class="w-full h-full object-cover"
+                        data-alt="Boiling pot ceremony illustration" src="ceremony_event.jpg" />
+                    <div class="absolute inset-0 bg-primary/10"></div>
+                </div>
+                <div class="lg:w-1/2 p-10 lg:p-16 flex flex-col justify-center">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-4xl">calendar_month</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">When</p>
+                            <h3 class="text-2xl font-bold">Saturday, May 9, 2026</h3>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-4xl">schedule</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Time</p>
+                            <h3 class="text-2xl font-bold">08:35 AM to 09:00 AM</h3>
+                            <p class="text-slate-500 mt-1 font-medium">The housewarming entry ceremony will take place
+                                at this time</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 mb-10">
+                        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-4xl">location_on</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Where</p>
+                            <h3 class="text-lg font-bold">Kannichira, Puthiya Road, Temple Gate, Thalassery, Kerala
+                                670102</h3>
+                        </div>
+                    </div>
+                    <button onclick="openCalendarModal()"
+                        class="w-full sm:w-max bg-primary text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                        <span class="material-symbols-outlined">event</span>
+                        Add to Calendar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="py-24 px-4" id="location">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Find Your Way</h2>
+                <p class="text-slate-500">Kannichira, Puthiya Road, Temple Gate, Thalassery, Kerala 670102</p>
+            </div>
+            <div
+                class="rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white/60 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl p-6 md:p-8">
+                <div class="aspect-video w-full rounded-lg overflow-hidden relative bg-slate-100 dark:bg-surface-dark">
+                    <iframe src="https://maps.google.com/maps?q=11.742969,75.509808&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" class="opacity-90 border-none">
+                    </iframe>
+                </div>
+                <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-6 px-2 md:px-4 pb-2">
+                    <div class="flex items-center gap-5">
+                        <div
+                            class="w-14 h-14 rounded-full bg-primary/15 flex items-center justify-center text-primary shadow-sm">
+                            <span class="material-symbols-outlined text-3xl">directions</span>
+                        </div>
+                        <p class="text-lg md:text-xl font-semibold text-slate-800 dark:text-slate-200">Need navigation
+                            assistance?</p>
+                    </div>
+                    <a class="bg-primary text-white px-8 py-4 rounded-full font-bold flex items-center gap-3 shadow-xl hover:shadow-primary/30 hover:-translate-y-1 transition-all whitespace-nowrap"
+                        href="https://www.google.com/maps?q=11.742969,75.509808&entry=gps" target="_blank">
+                        <span class="material-symbols-outlined">map</span>
+                        Open in Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- RSVP Section Removed -->
+
+    <!-- Special Invitation -->
+    <section class="py-20 px-4 bg-soft-pink/30 dark:bg-primary/5 text-center my-8 overflow-hidden">
+        <style>
+            @keyframes majesticGlow {
+                0% {
+                    text-shadow: 0 0 5px rgba(232, 48, 79, 0.4), 0 0 10px rgba(232, 48, 79, 0.2);
+                    transform: scale(1);
+                }
+
+                50% {
+                    text-shadow: 0 0 12px rgba(232, 48, 79, 0.9), 0 0 24px rgba(232, 48, 79, 0.6), 0 0 36px rgba(232, 48, 79, 0.4);
+                    transform: scale(1.02);
+                }
+
+                100% {
+                    text-shadow: 0 0 5px rgba(232, 48, 79, 0.4), 0 0 10px rgba(232, 48, 79, 0.2);
+                    transform: scale(1);
+                }
+            }
+
+            .glow-text-anim {
+                animation: majesticGlow 4s ease-in-out infinite;
+                display: inline-block;
+            }
+        </style>
+        <div class="max-w-4xl mx-auto">
+            <p class="text-4xl md:text-5xl lg:text-6xl text-primary leading-tight glow-text-anim py-4 px-2"
+                style="font-family: 'Great Vibes', cursive;">
+                On that occasion, you and your family are cordially invited to our house....!
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-24 px-4" id="contact">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">Contact Us</h2>
+                <p class="text-slate-500">Have questions? We'd love to hear from you!</p>
+            </div>
+
+            <script>var contactSubmitted = false;</script>
+            <iframe name="hidden_contact_iframe" id="hidden_contact_iframe" style="display:none;"
+                onload="if(contactSubmitted){ showSuccessModal('Thanks for contacting us.'); document.getElementById('contact-form').reset(); contactSubmitted = false; }"></iframe>
+            <form id="contact-form"
+                action="https://docs.google.com/forms/d/e/1FAIpQLScfpxX6BOt1Zu4mSovcut-PH73kS7lfDzGXPYQ9QmAq_RA-Yg/formResponse"
+                method="POST" target="hidden_contact_iframe" onsubmit="contactSubmitted=true;" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 px-1">Name</label>
+                        <input id="contact-name" name="entry.1570682823" required
+                            class="w-full px-6 py-4 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm outline-none"
+                            placeholder="Your Name" type="text" />
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 px-1">Email</label>
+                        <input id="contact-email" name="entry.283091979" required
+                            pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+                            class="w-full px-6 py-4 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm outline-none"
+                            placeholder="Your Email" type="email" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 px-1">Message</label>
+                    <textarea id="contact-message" name="entry.117900809" required
+                        class="w-full px-6 py-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm outline-none"
+                        placeholder="Your Message" rows="4"></textarea>
+                </div>
+                <div class="text-center">
+                    <button
+                        class="bg-slate-900 dark:bg-primary text-white px-12 py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity"
+                        type="submit">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-white dark:bg-background-dark border-t border-primary/20">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <img src="assets/logo_white_bg.jpg" alt="ApAA Logo"
+                    class="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm">
+                <span class="text-4xl tracking-wider text-[#F64C72] leading-none"
+                    style="font-family: 'Fredoka One', cursive; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">PRANAVAM</span>
+            </div>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto italic">"A home is built with love and dreams. We can't wait
+                to share ours with you."</p>
+            <div class="flex justify-center gap-6 mb-8 relative">
+                <!-- Share Widget -->
+                <div class="relative">
+                    <!-- Expandable share menu -->
+                    <div id="share-menu"
+                        class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[260px] sm:w-max bg-white dark:bg-[#3a0d11] border border-primary/20 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-wrap justify-center gap-2 sm:gap-3 p-3 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 z-50 items-center">
+                        <button
+                            onclick="window.open('https://api.whatsapp.com/send?text=You\'re invited to our housewarming! Check it out: ' + window.location.href, '_blank'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="WhatsApp">
+                            <svg class="w-[22px] h-[22px] fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="Facebook">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.open('https://twitter.com/intent/tweet?text=You\'re invited to our housewarming!&url=' + encodeURIComponent(window.location.href), '_blank'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="X (Twitter)">
+                            <svg class="w-[18px] h-[18px] fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="LinkedIn">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.open('https://instagram.com/', '_blank'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#E1306C]/10 text-[#E1306C] hover:bg-[#E1306C] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="Instagram">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.405a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.open('mailto:?subject=Housewarming Invitation&body=You\'re invited to our housewarming! Check it out: ' + window.location.href, '_self'); toggleShareMenu();"
+                            class="w-10 h-10 rounded-full bg-[#EA4335]/10 text-[#EA4335] hover:bg-[#EA4335] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="Email">
+                            <svg class="w-[22px] h-[22px] fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" />
+                            </svg>
+                        </button>
+                        <button onclick="copyUrlToClipboard(this)"
+                            class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-sm"
+                            aria-label="Copy URL">
+                            <span class="material-symbols-outlined text-[20px]">content_copy</span>
+                        </button>
+                    </div>
+
+                    <button
+                        class="w-10 h-10 rounded-full bg-soft-pink flex items-center justify-center text-primary hover:scale-110 transition-transform relative z-10"
+                        onclick="toggleShareMenu()">
+                        <span class="material-symbols-outlined">share</span>
+                    </button>
+                </div>
+
+                <a class="w-10 h-10 rounded-full bg-soft-pink flex items-center justify-center text-primary hover:scale-110 transition-transform"
+                    href="#">
+                    <span class="material-symbols-outlined">favorite</span>
+                </a>
+            </div>
+            <p class="text-xs text-slate-400 uppercase tracking-widest">© 2026 PRANAVAM. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeSuccessModal()">
+        </div>
+        <div class="relative bg-white dark:bg-red-dark border border-primary/20 p-8 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 opacity-0 transition-all duration-300"
+            id="success-modal-content">
+            <div class="text-center">
+                <div
+                    class="size-16 bg-soft-pink/50 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="material-symbols-outlined text-4xl">check_circle</span>
+                </div>
+                <h3 class="text-2xl font-black tracking-tight mb-2 text-slate-900 dark:text-white">Thank You!</h3>
+                <p id="success-modal-text" class="text-slate-600 dark:text-slate-400 mb-8 font-medium">Thanks for
+                    submitting.</p>
+                <button onclick="closeSuccessModal()"
+                    class="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold tracking-widest uppercase transition-all shadow-lg shadow-primary/20">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Calendar Modal -->
+    <div id="calendar-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="calendar-backdrop"
+            onclick="closeCalendarModal()"></div>
+
+        <!-- Modal Content -->
+        <div id="calendar-content"
+            class="relative bg-white dark:bg-red-dark w-[90%] max-w-md rounded-3xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 border border-primary/10 dark:border-primary-dark">
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-soft-pink/20 dark:bg-slate-800/50">
+                <h3 class="text-xl font-bold">Add to Calendar</h3>
+                <button onclick="closeCalendarModal()"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-4 flex flex-col gap-2">
+                <button onclick="addToSpecificCalendar('google')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg"
+                        alt="Google Calendar" class="w-8 h-8">
+                    <span class="font-medium">Google Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('outlook')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        class="w-8 h-8 fill-[#0078D4]">
+                        <title>Microsoft Outlook</title>
+                        <path
+                            d="M7.88 12.04q0-.45.11-.87.12-.41.33-.74.22-.33.58-.52.36-.2.87-.2t.88.2q.36.19.58.52.22.33.33.74.11.42.11.87t-.11.87q-.11.41-.33.74-.22.33-.58.52-.36.2-.88.2t-.87-.2q-.36-.19-.58-.52-.21-.33-.33-.74-.11-.42-.11-.87zm9.93 5.42h3.29V5.41H17.8v12.05zm-3.26-10.8v10.87L2.4 19.85v-15.3l12.13 2.19zm-5.06 7.42q.65 0 1.15-.22.51-.21.86-.6.36-.39.55-.95.19-.56.19-1.29 0-.74-.19-1.3-.19-.55-.55-.94-.35-.38-.86-.59-.5-.22-1.15-.22-.64 0-1.15.22-.51.21-.86.59-.36.39-.55.94-.19.56-.19 1.3 0 .73.19 1.29.19.56.55.95.35.39.86.6.5.22 1.15.22z" />
+                    </svg>
+                    <span class="font-medium">Outlook Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('yahoo')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        class="w-8 h-8 fill-[#6001D2]">
+                        <title>Yahoo!</title>
+                        <path
+                            d="M16.036 2.05s-2.096 4.965-2.096 4.965c-.067.168-.133.385-.205.578L9.93 2.052H5.7l5.354 7.622-1.928 6.04h3.763l2.219-6.908c.08-.24.162-.48.243-.72h.024A10.51 10.51 0 0 0 15.65 9.1v8.615h3.693V2.05h-3.307zM24 18.067H20.088v3.966H24v-3.966z" />
+                    </svg>
+                    <span class="font-medium">Yahoo Calendar</span>
+                </button>
+
+                <button onclick="addToSpecificCalendar('apple')"
+                    class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div
+                        class="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-lg flex items-center justify-center text-white dark:text-slate-900 border border-slate-300 dark:border-transparent">
+                        <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                    </div>
+                    <span class="font-medium">Apple Calendar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none">
+        <div
+            class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border border-primary/20">
+            <span class="material-symbols-outlined text-primary">check_circle</span>
+            <p class="font-bold text-sm">Thanks for keeping us in your calendar!</p>
+        </div>
+    </div>
+
+
+    <script>
+        // Modals & Forms handling
+        function showSuccessModal(message) {
+            const modal = document.getElementById('success-modal');
+            const content = document.getElementById('success-modal-content');
+            const textElement = document.getElementById('success-modal-text');
+            if (message) {
+                textElement.innerText = message;
+            }
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            const content = document.getElementById('success-modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Calendar Modal
+        function openCalendarModal() {
+            const modal = document.getElementById('calendar-modal');
+            const backdrop = document.getElementById('calendar-backdrop');
+            const content = document.getElementById('calendar-content');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeCalendarModal() {
+            const modal = document.getElementById('calendar-modal');
+            const backdrop = document.getElementById('calendar-backdrop');
+            const content = document.getElementById('calendar-content');
+
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function addToSpecificCalendar(provider) {
+            const event = {
+                title: 'PRANAVAM Housewarming Ceremony',
+                location: '123 Elegance Boulevard, Golden Hills, CA 90210',
+                description: 'Join us as we celebrate PRANAVAM! Traditional rituals followed by brunch.',
+                start: '20260509T033000Z',
+                end: '20260509T073000Z'
+            };
+
+            let url = '';
+
+            switch (provider) {
+                case 'google':
+                    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.end}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
+                case 'outlook':
+                    url = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${event.start}&enddt=${event.end}&subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
+                case 'yahoo':
+                    url = `https://calendar.yahoo.com/?v=60&view=d&type=20&title=${encodeURIComponent(event.title)}&st=${event.start}&et=${event.end}&desc=${encodeURIComponent(event.description)}&in_loc=${encodeURIComponent(event.location)}`;
+                    window.open(url, '_blank');
+                    break;
+                case 'apple':
+                default:
+                    const icsContent = [
+                        'BEGIN:VCALENDAR',
+                        'VERSION:2.0',
+                        'PRODID:-//PRANAVAM Housewarming//EN',
+                        'BEGIN:VEVENT',
+                        `UID:${new Date().getTime()}@apaa-housewarming.com`,
+                        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                        `DTSTART:${event.start}`,
+                        `DTEND:${event.end}`,
+                        `SUMMARY:${event.title}`,
+                        `DESCRIPTION:${event.description}`,
+                        `LOCATION:${event.location}`,
+                        'END:VEVENT',
+                        'END:VCALENDAR'
+                    ].join('\n');
+
+                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.setAttribute('download', 'PRANAVAM_Housewarming.ics');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    break;
+            }
+
+            closeCalendarModal();
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 4000);
+        }
+
+        // Countdown Timer Logic
+        function updateCountdown() {
+            const eventDate = new Date('May 9, 2026 09:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+
+            if (distance < 0) {
+                // Event passed
+                document.getElementById('cd-days').innerText = "00";
+                document.getElementById('cd-hours').innerText = "00";
+                document.getElementById('cd-minutes').innerText = "00";
+                document.getElementById('cd-seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('cd-minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('cd-seconds').innerText = seconds.toString().padStart(2, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+                });
+
+                // Close mobile menu when a link is clicked
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth < 768) {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenu.classList.remove('flex');
+                        }
+                    });
+                });
+            }
+
+            // Start countdown
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+        });
+
+        // Search Functionality
+        function toggleSearch() {
+            const container = document.getElementById('search-container');
+            const input = document.getElementById('search-input');
+            const isHidden = container.classList.contains('opacity-0');
+
+            if (isHidden) {
+                container.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                container.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                setTimeout(() => input.focus(), 300);
+            } else {
+                container.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                container.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                clearHighlights();
+                input.value = '';
+            }
+        }
+
+        let highlightTimeout;
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(highlightTimeout);
+                    highlightTimeout = setTimeout(() => {
+                        handleSearch(e.target.value);
+                    }, 300);
+                });
+
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const firstMatch = document.querySelector('mark.search-highlight');
+                        if (firstMatch) {
+                            firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            toggleSearch(); // auto-close after jumping to result
+                        }
+                    }
+                });
+            }
+        });
+
+        function clearHighlights() {
+            const marks = document.querySelectorAll('mark.search-highlight');
+            marks.forEach(mark => {
+                const parent = mark.parentNode;
+                if (parent) {
+                    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+                    parent.normalize();
+                }
+            });
+        }
+
+        function handleSearch(keyword) {
+            clearHighlights();
+            if (!keyword.trim()) return;
+
+            const regex = new RegExp(`(${keyword})`, 'gi');
+            const searchableElements = document.querySelectorAll('section h1, section h2, section h3, section p, section span, section a');
+
+            searchableElements.forEach(el => {
+                if (el.classList.contains('material-symbols-outlined') || (el.id && el.id.startsWith('cd-'))) return;
+
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === 3 && node.nodeValue.trim().length > 0) {
+                        const text = node.nodeValue;
+                        if (regex.test(text)) {
+                            const newHtml = text.replace(regex, `<mark class="search-highlight bg-primary/20 text-primary dark:bg-primary/50 dark:text-white rounded-md px-1 py-0.5 font-bold shadow-sm transition-all">$1</mark>`);
+                            const wrapper = document.createElement('span');
+                            wrapper.innerHTML = newHtml;
+                            node.replaceWith(...wrapper.childNodes);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Share Menu Functionality
+        function toggleShareMenu() {
+            const menu = document.getElementById('share-menu');
+            if (menu.classList.contains('opacity-0')) {
+                menu.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+                menu.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+            } else {
+                menu.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                menu.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            }
+        }
+
+        // Hide share menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const menu = document.getElementById('share-menu');
+            const shareBtn = menu.nextElementSibling;
+            if (!menu.classList.contains('opacity-0') && !menu.contains(event.target) && !shareBtn.contains(event.target)) {
+                toggleShareMenu();
+            }
+        });
+
+        function copyUrlToClipboard(btn) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const icon = btn.querySelector('.material-symbols-outlined');
+                const oldIcon = icon.textContent;
+                icon.textContent = 'check';
+                icon.classList.add('text-green-500', 'dark:text-green-400');
+                setTimeout(() => {
+                    icon.textContent = oldIcon;
+                    icon.classList.remove('text-green-500', 'dark:text-green-400');
+                    toggleShareMenu();
+                }, 1500);
+            }).catch(err => {
+                console.error('Could not copy URL: ', err);
+            });
+        }
+
+        // Premium Button Click Logic
+        function handlePremiumClick(event, callback) {
+            event.preventDefault();
+            const btn = event.currentTarget;
+            
+            // Haptic/vibrate class
+            btn.classList.add('vibrate');
+            setTimeout(() => btn.classList.remove('vibrate'), 200);
+
+            // Ripple Effect
+            const rect = btn.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const ripple = document.createElement('div');
+            ripple.className = 'premium-ripple';
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            // Size based on distance to furthest corner
+            const size = Math.max(rect.width, rect.height) * 2;
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.marginLeft = ripple.style.marginTop = `${-size/2}px`;
+            btn.appendChild(ripple);
+
+            // Sparkles Effect
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'premium-sparkle';
+                sparkle.style.left = `${x}px`;
+                sparkle.style.top = `${y}px`;
+                const tx = (Math.random() - 0.5) * 80;
+                const ty = (Math.random() - 0.5) * 80;
+                sparkle.style.setProperty('--tx', `${tx}px`);
+                sparkle.style.setProperty('--ty', `${ty}px`);
+                btn.appendChild(sparkle);
+            }
+
+            // Loading state
+            btn.classList.add('btn-loading');
+
+            // Wait 700ms to show the loading effect, then execute callback
+            setTimeout(() => {
+                btn.classList.remove('btn-loading');
+                btn.querySelectorAll('.premium-ripple, .premium-sparkle').forEach(el => el.remove());
+                
+                if (typeof callback === 'function') {
+                    callback();
+                } else if (typeof callback === 'string') {
+                    window.location.href = callback;
+                }
+            }, 700);
+        }
+
+        // Welcome Screen & Music Logic
+        function closeWelcomeScreen() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 1000); // Wait for transition
+
+            // Play music on interaction
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                bgMusic.volume = 0.5; // Soft volume
+                bgMusic.play().then(() => {
+                    document.getElementById('musicToggle').classList.remove('hidden');
+                }).catch(err => {
+                    console.error("Audio playback failed:", err);
+                    document.getElementById('musicIcon').textContent = 'music_off';
+                    document.getElementById('musicToggle').classList.remove('hidden');
+                });
+            } else {
+                document.getElementById('musicToggle').classList.remove('hidden');
+            }
+        }
+
+        function toggleMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            const musicIcon = document.getElementById('musicIcon');
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicIcon.textContent = 'music_note';
+            } else {
+                bgMusic.pause();
+                musicIcon.textContent = 'music_off';
+            }
+        }
+    </script>
+</body>
+
+</html>

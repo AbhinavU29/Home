@@ -50,6 +50,14 @@
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
+    .animate-marquee {
+      animation: marquee 25s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
     @media print {
       .no-print { display: none !important; }
       .print-only { display: block !important; }
@@ -169,6 +177,20 @@
       </button>
     </div>
   </header>
+
+  <!-- Live Bullion Marquee Ticker -->
+  <div id="metal-rates-marquee-bar" class="bg-blue-950/80 border-b border-slate-200 dark:border-slate-850 py-1.5 px-4 text-xs font-semibold select-none overflow-hidden hidden no-print">
+    <div class="relative flex items-center">
+      <div class="absolute left-0 z-10 bg-[#DEAF32] text-slate-900 px-2 py-0.5 text-[9px] font-bold tracking-wider rounded-r uppercase flex items-center gap-1">
+        <i data-lucide="trending-up" class="w-3 h-3"></i> Live Rates
+      </div>
+      <div class="w-full overflow-hidden flex items-center pl-20">
+        <div class="animate-marquee flex gap-10 text-[9px] text-blue-200 font-mono whitespace-nowrap" id="rates-marquee-content">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- 2. CORE WORKSPACE CONTAINER -->
   <div class="flex-1 flex relative no-print">
@@ -977,6 +999,242 @@
         </div>
       </div>
 
+      <!-- view-products: Product Master -->
+      <div id="view-products" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4 flex justify-between items-center">
+          <div>
+            <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white flex items-center gap-2">
+              Product Master
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Maintain and configure ornaments, stock categories, weights, making charges, and default GST rates.
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openProductModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1.5 transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i> Add Product
+            </button>
+            <button onclick="navigate('import')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1.5 transition-colors">
+              <i data-lucide="upload" class="w-4 h-4"></i> Bulk Upload Excel
+            </button>
+          </div>
+        </div>
+
+        <div id="products-status-msg" class="hidden bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span id="products-status-msg-text"></span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+          <div class="relative flex-1 max-w-sm">
+            <input 
+              type="text" 
+              id="products-search-query" 
+              oninput="populateProductsTable()"
+              placeholder="Search products by name or type..." 
+              class="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-slate-855 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <button 
+            onclick="populateProductsTable()"
+            class="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-650 dark:text-slate-350 transition-colors shadow-sm"
+          >
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            Refresh Products
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden blue-glow">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-150 dark:border-slate-800 text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50 dark:bg-slate-950/50">
+                  <th class="py-3 px-5">ID</th>
+                  <th class="py-3 px-5">Product Name</th>
+                  <th class="py-3 px-5">Ornament Type</th>
+                  <th class="py-3 px-5">Gold Weight (g)</th>
+                  <th class="py-3 px-5">Making Charge (₹/g)</th>
+                  <th class="py-3 px-5">GST (%)</th>
+                  <th class="py-3 px-5 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Dyn -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- view-import: Import Data -->
+      <div id="view-import" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white flex items-center gap-2">
+            Import Data
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Upload Excel templates to quickly add Users and Products in bulk.
+          </p>
+        </div>
+
+        <div id="import-msg" class="hidden p-3 rounded-lg text-xs flex items-center gap-2">
+          <i id="import-msg-icon" class="w-4 h-4"></i>
+          <span id="import-msg-text"></span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Card 1: Users Upload -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-6 rounded-xl space-y-4 shadow-sm">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-850 pb-3">
+              <div class="p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg text-blue-600 dark:text-blue-400">
+                <i data-lucide="users" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-serif-brand text-base font-bold text-slate-800 dark:text-white">Import Users</h3>
+                <p class="text-[10px] text-slate-400">Upload Excel sheet with columns: Name, Username, Password, Role, Mobile</p>
+              </div>
+            </div>
+            
+            <div class="space-y-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block mb-1.5">Download Sample Template</label>
+                <a onclick="downloadUserTemplate()" class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-650 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors shadow-sm">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-blue-600"></i>
+                  Download Users Template (CSV)
+                </a>
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Select Spreadsheet File</label>
+                <input type="file" id="import-users-file" accept=".csv, .xlsx, .xls" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-855 rounded-lg px-3 py-2 text-xs text-slate-600 dark:text-slate-350 focus:outline-none" />
+              </div>
+
+              <div class="flex gap-2 pt-2">
+                <button onclick="handleImportValidate('users')" class="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-250 dark:border-slate-855 text-slate-700 dark:text-slate-200 py-2.5 rounded-lg text-xs font-bold uppercase transition-colors shadow-sm">
+                  Validate Data
+                </button>
+                <button onclick="handleImportSubmit('users')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-bold uppercase transition-colors shadow-md">
+                  Import Users
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Products Upload -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-6 rounded-xl space-y-4 shadow-sm">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-850 pb-3">
+              <div class="p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg text-blue-600 dark:text-blue-400">
+                <i data-lucide="gem" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-serif-brand text-base font-bold text-slate-800 dark:text-white">Import Products</h3>
+                <p class="text-[10px] text-slate-400">Upload Excel sheet with columns: Product Name, Ornament Type, Gold Weight, Making Charge, GST</p>
+              </div>
+            </div>
+            
+            <div class="space-y-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block mb-1.5">Download Sample Template</label>
+                <a onclick="downloadProductTemplate()" class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-655 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors shadow-sm">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-blue-600"></i>
+                  Download Products Template (CSV)
+                </a>
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Select Spreadsheet File</label>
+                <input type="file" id="import-products-file" accept=".csv, .xlsx, .xls" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-855 rounded-lg px-3 py-2 text-xs text-slate-600 dark:text-slate-350 focus:outline-none" />
+              </div>
+
+              <div class="flex gap-2 pt-2">
+                <button onclick="handleImportValidate('products')" class="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-250 dark:border-slate-855 text-slate-700 dark:text-slate-200 py-2.5 rounded-lg text-xs font-bold uppercase transition-colors shadow-sm">
+                  Validate Data
+                </button>
+                <button onclick="handleImportSubmit('products')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-bold uppercase transition-colors shadow-md">
+                  Import Products
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dry run review section -->
+        <div id="import-dryrun-container" class="hidden space-y-4">
+          <h4 class="font-serif-brand text-sm font-bold text-slate-800 dark:text-white">Validation Results Preview</h4>
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-50 dark:bg-slate-900">
+                <tr class="border-b border-slate-200 dark:border-slate-850 font-bold uppercase text-slate-450 tracking-wider">
+                  <th class="py-2.5 px-4">Row</th>
+                  <th class="py-2.5 px-4">Details</th>
+                  <th class="py-2.5 px-4 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="import-dryrun-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- dyn -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- view-settings: Settings -->
+      <div id="view-settings" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white flex items-center gap-2">
+            Settings & Rates Configuration
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Configure live bullion market prices that populate the POS Billing calculator dynamically.
+          </p>
+        </div>
+
+        <div id="settings-status-msg" class="hidden bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span id="settings-status-msg-text"></span>
+        </div>
+
+        <div class="max-w-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-6 rounded-xl space-y-5 shadow-sm blue-glow">
+          <h3 class="font-serif-brand text-base font-bold text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-855 pb-2 flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-5 h-5 text-amber-500"></i> Live Metal Rates (per gram)
+          </h3>
+          
+          <form onsubmit="handleSettingsSave(event)" class="space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Gold 24K Rate (₹/g) *</label>
+                <input type="number" step="0.01" id="settings-gold-24k" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Gold 22K Rate (₹/g) *</label>
+                <input type="number" step="0.01" id="settings-gold-22k" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Gold 18K Rate (₹/g) *</label>
+                <input type="number" step="0.01" id="settings-gold-18k" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Silver Rate (₹/g) *</label>
+                <input type="number" step="0.01" id="settings-silver" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Platinum Rate (₹/g) *</label>
+                <input type="number" step="0.01" id="settings-platinum" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs shadow-md transition-colors uppercase tracking-wide">
+                Save Rates Configuration
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -1086,6 +1344,76 @@
         <div class="flex gap-3 pt-2">
           <button type="button" onclick="closeUserResetModal()" class="flex-1 border border-slate-200 dark:border-slate-800 text-slate-550 dark:text-slate-400 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-50">Cancel</button>
           <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-xs">Confirm Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Product Add/Edit Form -->
+  <div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeProductModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 relative z-10 space-y-4 shadow-2xl blue-glow">
+      <button onclick="closeProductModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:text-slate-550">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 id="product-modal-title" class="font-serif-brand text-xl text-slate-800 dark:text-white font-bold border-b border-slate-100 dark:border-slate-850 pb-3">
+        Register New Product
+      </h3>
+      <div id="product-modal-error" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="product-modal-error-text"></span>
+      </div>
+      <form onsubmit="handleProductFormSubmit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="product-modal-id" />
+        
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Product Name *</label>
+          <input type="text" id="product-modal-name" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-855 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" placeholder="e.g. Gold Necklace 22K" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block font-sans font-semibold">Ornament Type *</label>
+            <select id="product-modal-type" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-slate-855 dark:text-slate-100 focus:outline-none">
+              <option value="Necklace">Necklace</option>
+              <option value="Bangle">Bangle</option>
+              <option value="Ring">Ring</option>
+              <option value="Chain">Chain</option>
+              <option value="Earrings">Earrings</option>
+              <option value="Bracelet">Bracelet</option>
+              <option value="Pendant">Pendant</option>
+              <option value="Coin">Coin</option>
+              <option value="Anklet">Anklet</option>
+              <option value="Haram">Haram</option>
+              <option value="Nose Pin">Nose Pin</option>
+              <option value="Bridal Set">Bridal Set</option>
+              <option value="Mangalsutra">Mangalsutra</option>
+              <option value="Kada">Kada</option>
+              <option value="Custom Item">Custom Item</option>
+            </select>
+          </div>
+          
+          <div class="space-y-1">
+            <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Gold Weight (g) *</label>
+            <input type="number" step="0.001" id="product-modal-weight" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-855 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Making Charge (₹/g) *</label>
+            <input type="number" step="0.01" id="product-modal-making" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-855 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" />
+          </div>
+          
+          <div class="space-y-1">
+            <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">GST (%) *</label>
+            <input type="number" step="0.1" id="product-modal-gst" required value="3.0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-855 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" />
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeProductModal()" class="flex-1 border border-slate-200 dark:border-slate-800 py-2.5 rounded-lg text-slate-550 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-semibold">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs shadow">Save Product</button>
         </div>
       </form>
     </div>
@@ -1312,6 +1640,26 @@
       localStorage.setItem('users', JSON.stringify(initialUsers));
     }
 
+    if (!localStorage.getItem('products')) {
+      const initialProducts = [
+        { product_id: 1, product_name: 'Gold Ring 22K', ornament_type: 'Ring', gold_weight: 6.0, making_charge: 180.0, gst: 3.0 },
+        { product_id: 2, product_name: 'Silver Anklet', ornament_type: 'Anklet', gold_weight: 12.5, making_charge: 120.0, gst: 3.0 },
+        { product_id: 3, product_name: 'Gold Necklace 22K', ornament_type: 'Necklace', gold_weight: 24.0, making_charge: 500.0, gst: 3.0 }
+      ];
+      localStorage.setItem('products', JSON.stringify(initialProducts));
+    }
+
+    if (!localStorage.getItem('settings_rates')) {
+      const initialRates = {
+        gold_24k: 7200.0,
+        gold_22k: 6600.0,
+        gold_18k: 5400.0,
+        silver: 90.0,
+        platinum: 3200.0
+      };
+      localStorage.setItem('settings_rates', JSON.stringify(initialRates));
+    }
+
     if (!localStorage.getItem('customers')) {
       const initialCustomers = [
         { customer_id: 1, customer_name: 'Abhinav Sharma', phone_number: '9876543210', address: '123 Bazaar Road, Coimbatore' },
@@ -1454,37 +1802,41 @@
 
     function populateNavigationMenus() {
       let menuItems = [
-        { name: 'Dashboard', icon: 'layout-dashboard', view: 'dashboard' },
-        { name: 'POS Invoicing', icon: 'receipt', view: 'billing' },
-        { name: 'Customers CRUD', icon: 'users', view: 'crm' },
-        { name: 'Bill Registry', icon: 'history', view: 'reports' }
+        { name: 'Dashboard', icon: 'layout-dashboard', view: 'dashboard', roles: ['Admin', 'Operator'] },
+        { name: 'POS Invoicing', icon: 'receipt', view: 'billing', roles: ['Admin', 'Operator'] },
+        { name: 'Customers', icon: 'users', view: 'crm', roles: ['Admin', 'Operator'] },
+        { name: 'Transactions Registry', icon: 'history', view: 'reports', roles: ['Admin', 'Operator'] },
+        { name: 'Product Master', icon: 'database', view: 'products', roles: ['Admin'] },
+        { name: 'User Management', icon: 'user-cog', view: 'users', roles: ['Admin'] },
+        { name: 'Import Data', icon: 'file-spreadsheet', view: 'import', roles: ['Admin'] },
+        { name: 'Analytics & Reports', icon: 'line-chart', view: 'analytics', roles: ['Admin'] },
+        { name: 'Settings', icon: 'settings', view: 'settings', roles: ['Admin'] }
       ];
       
-      if (currentSession && currentSession.role === 'Admin') {
-        menuItems.push({ name: 'User Management', icon: 'user-cog', view: 'users' });
-        menuItems.push({ name: 'Analytics', icon: 'line-chart', view: 'analytics' });
-      }
+      const role = currentSession ? currentSession.role : 'Operator';
+      const allowedItems = menuItems.filter(item => item.roles.includes(role));
 
       const makeNavHTML = (isMobile) => {
-        return menuItems.map(item => `
+        return allowedItems.map(item => `
           <button 
             id="${isMobile ? 'mob-' : 'sib-'}${item.view}" 
             onclick="navigate('${item.view}')" 
             class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-150 text-left text-slate-600 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-blue-600 dark:hover:text-blue-400"
           >
             <i data-lucide="${item.icon}" class="w-4.5 h-4.5"></i>
-            ${item.name}
+            <span>${item.name}</span>
           </button>
         `).join('');
       };
 
       document.getElementById('sidebar-nav-container').innerHTML = makeNavHTML(false);
       document.getElementById('mobile-nav-container').innerHTML = makeNavHTML(true);
+      lucide.createIcons();
     }
 
     // ---------------- SYSTEM NAVIGATOR ----------------
     function navigate(viewName) {
-      if ((viewName === 'analytics' || viewName === 'users') && currentSession && currentSession.role !== 'Admin') {
+      if ((viewName === 'analytics' || viewName === 'users' || viewName === 'products' || viewName === 'import' || viewName === 'settings') && currentSession && currentSession.role !== 'Admin') {
         navigate('dashboard');
         return;
       }
@@ -1496,11 +1848,14 @@
       document.getElementById('view-reports').classList.add('hidden');
       document.getElementById('view-analytics').classList.add('hidden');
       document.getElementById('view-users').classList.add('hidden');
+      if (document.getElementById('view-products')) document.getElementById('view-products').classList.add('hidden');
+      if (document.getElementById('view-import')) document.getElementById('view-import').classList.add('hidden');
+      if (document.getElementById('view-settings')) document.getElementById('view-settings').classList.add('hidden');
 
       const targetView = document.getElementById(`view-${viewName}`);
       if (targetView) targetView.classList.remove('hidden');
 
-      const navButtons = document.querySelectorAll('[id^="sib-"]');
+      const navButtons = document.querySelectorAll('[id^="sib-"], [id^="mob-"]');
       navButtons.forEach(btn => {
         btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
         btn.classList.add('text-slate-600', 'dark:text-slate-350');
@@ -1509,6 +1864,11 @@
       if (activeBtn) {
         activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
         activeBtn.classList.remove('text-slate-600', 'dark:text-slate-350');
+      }
+      const activeMobBtn = document.getElementById('mob-' + viewName);
+      if (activeMobBtn) {
+        activeMobBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        activeMobBtn.classList.remove('text-slate-600', 'dark:text-slate-350');
       }
 
       document.getElementById('mobile-sidebar-drawer').classList.add('hidden');
@@ -1535,6 +1895,10 @@
         calculateAnalytics();
       } else if (viewName === 'users') {
         populateUsersTable();
+      } else if (viewName === 'products') {
+        populateProductsTable();
+      } else if (viewName === 'settings') {
+        loadSettingsView();
       }
     }
 
@@ -2070,6 +2434,546 @@
       populateUsersTable();
     }
 
+    // ---------------- PRODUCT MASTER CRUD OPERATIONS ----------------
+    function populateProductsTable() {
+      const tbody = document.getElementById('products-tbody');
+      if (!tbody) return;
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      const query = (document.getElementById('products-search-query').value || '').toLowerCase();
+
+      const filtered = products.filter(p => 
+        p.product_name.toLowerCase().includes(query) || 
+        p.ornament_type.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-8 text-center text-slate-400">
+              No products registered. Click "Add Product" or upload an Excel template to get started.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-200">
+          <td class="py-3 px-5 font-mono text-[10px] font-bold">${p.product_id}</td>
+          <td class="py-3 px-5 font-semibold">${p.product_name}</td>
+          <td class="py-3 px-5">${p.ornament_type}</td>
+          <td class="py-3 px-5 font-mono">${p.gold_weight.toFixed(3)} g</td>
+          <td class="py-3 px-5 font-mono">₹${p.making_charge.toLocaleString()}</td>
+          <td class="py-3 px-5 font-mono">${p.gst.toFixed(1)}%</td>
+          <td class="py-3 px-5 text-center">
+            <div class="flex justify-center gap-2">
+              <button onclick="openProductModal(${p.product_id})" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition-colors" title="Edit Product">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteProduct(${p.product_id})" class="p-1 text-red-650 hover:bg-red-50 dark:hover:bg-red-950/40 rounded transition-colors" title="Delete Product">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function openProductModal(id = null) {
+      const title = document.getElementById('product-modal-title');
+      const errBox = document.getElementById('product-modal-error');
+      
+      errBox.classList.add('hidden');
+      document.getElementById('product-modal-id').value = id || '';
+
+      if (id) {
+        title.textContent = "Edit Product Details";
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const prod = products.find(p => p.product_id === id);
+        if (prod) {
+          document.getElementById('product-modal-name').value = prod.product_name;
+          document.getElementById('product-modal-type').value = prod.ornament_type;
+          document.getElementById('product-modal-weight').value = prod.gold_weight;
+          document.getElementById('product-modal-making').value = prod.making_charge;
+          document.getElementById('product-modal-gst').value = prod.gst;
+        }
+      } else {
+        title.textContent = "Register New Product";
+        document.getElementById('product-modal-name').value = '';
+        document.getElementById('product-modal-type').value = 'Necklace';
+        document.getElementById('product-modal-weight').value = '';
+        document.getElementById('product-modal-making').value = '';
+        document.getElementById('product-modal-gst').value = '3.0';
+      }
+
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+    }
+
+    function handleProductFormSubmit(event) {
+      event.preventDefault();
+      const idStr = document.getElementById('product-modal-id').value;
+      const name = document.getElementById('product-modal-name').value.trim();
+      const type = document.getElementById('product-modal-type').value;
+      const weight = parseFloat(document.getElementById('product-modal-weight').value) || 0;
+      const making = parseFloat(document.getElementById('product-modal-making').value) || 0;
+      const gst = parseFloat(document.getElementById('product-modal-gst').value) || 3.0;
+
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+
+      if (idStr) {
+        // Edit
+        const id = parseInt(idStr);
+        const idx = products.findIndex(p => p.product_id === id);
+        if (idx !== -1) {
+          products[idx] = { product_id: id, product_name: name, ornament_type: type, gold_weight: weight, making_charge: making, gst: gst };
+        }
+      } else {
+        // Add
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.product_id)) + 1 : 1;
+        products.push({ product_id: newId, product_name: name, ornament_type: type, gold_weight: weight, making_charge: making, gst: gst });
+      }
+
+      localStorage.setItem('products', JSON.stringify(products));
+      closeProductModal();
+      populateProductsTable();
+      populatePOSProductsDropdown();
+
+      const statusMsg = document.getElementById('products-status-msg');
+      const statusText = document.getElementById('products-status-msg-text');
+      statusMsg.classList.remove('hidden');
+      statusText.textContent = "Product entry saved successfully!";
+      
+      setTimeout(() => {
+        statusMsg.classList.add('hidden');
+      }, 4000);
+    }
+
+    function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+        return;
+      }
+      let products = JSON.parse(localStorage.getItem('products')) || [];
+      products = products.filter(p => p.product_id !== id);
+      localStorage.setItem('products', JSON.stringify(products));
+      populateProductsTable();
+      populatePOSProductsDropdown();
+
+      const statusMsg = document.getElementById('products-status-msg');
+      const statusText = document.getElementById('products-status-msg-text');
+      statusMsg.classList.remove('hidden');
+      statusText.textContent = "Product record deleted.";
+      
+      setTimeout(() => {
+        statusMsg.classList.add('hidden');
+      }, 4505);
+    }
+
+    // ---------------- EXCEL IMPORT MODULE OPERATIONS ----------------
+    function downloadUserTemplate() {
+      const csvContent = "data:text/csv;charset=utf-8,Name,Username,Password,Role,Mobile\\nSample User,sample_operator,operator123,Operator,9876543210";
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "user_import_template.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    function downloadProductTemplate() {
+      const csvContent = "data:text/csv;charset=utf-8,Product Name,Ornament Type,Gold Weight,Making Charge,GST\\nGold Ring 22K,Ring,6.5,180.0,3.0\\nSilver Chain,Chain,15.2,110.0,3.0";
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "product_import_template.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function parseExcelOrCSV(file, callback) {
+      const reader = new FileReader();
+      const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+      
+      if (isExcel) {
+        reader.onload = function(e) {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          if (jsonData.length === 0) {
+            callback(new Error("File is empty"), null);
+            return;
+          }
+          
+          const headers = jsonData[0].map(h => String(h || '').trim());
+          const rows = [];
+          for (let i = 1; i < jsonData.length; i++) {
+            const rowData = jsonData[i];
+            if (rowData.length === 0 || rowData.every(cell => cell === null || cell === '')) continue;
+            const obj = {};
+            for (let j = 0; j < headers.length; j++) {
+              obj[headers[j]] = rowData[j] !== undefined ? rowData[j] : '';
+            }
+            rows.push(obj);
+          }
+          callback(null, { headers, data: rows });
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        // CSV
+        reader.onload = function(e) {
+          const text = e.target.result;
+          try {
+            const parsed = parseCSV(text);
+            callback(null, parsed);
+          } catch (err) {
+            callback(err, null);
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function parseCSV(text) {
+      const lines = text.split('\\n');
+      const result = [];
+      if (lines.length === 0 || !lines[0].trim()) {
+        throw new Error("CSV file is empty");
+      }
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const currentline = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) {
+          obj[headers[j]] = currentline[j] || '';
+        }
+        result.push(obj);
+      }
+      return { headers, data: result };
+    }
+
+    function getVal(row, key) {
+      const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+      for (const k in row) {
+        if (k.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedKey) {
+          return row[k];
+        }
+      }
+      return '';
+    }
+
+    function handleImportValidate(type) {
+      const fileInput = document.getElementById(`import-${type}-file`);
+      const dryrunContainer = document.getElementById('import-dryrun-container');
+      const dryrunTbody = document.getElementById('import-dryrun-tbody');
+      const msg = document.getElementById('import-msg');
+      const msgText = document.getElementById('import-msg-text');
+
+      msg.className = "hidden p-3 rounded-lg text-xs flex items-center gap-2";
+      dryrunContainer.classList.add('hidden');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+        msgText.textContent = "Please select a template file first.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      parseExcelOrCSV(file, function(err, parsed) {
+        if (err) {
+          msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+          msgText.textContent = "Error parsing file: " + err.message;
+          return;
+        }
+
+        try {
+          let html = '';
+          let isValid = true;
+
+          const normalizedHeaders = parsed.headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+          if (type === 'users') {
+            const required = ['name', 'username', 'password', 'role', 'mobile'];
+            const missing = required.filter(r => !normalizedHeaders.includes(r));
+            if (missing.length > 0) {
+              throw new Error("Missing required columns: " + missing.join(', '));
+            }
+
+            parsed.data.forEach((row, idx) => {
+              let errors = [];
+              const name = getVal(row, 'name');
+              const username = getVal(row, 'username');
+              const password = getVal(row, 'password');
+              const role = getVal(row, 'role');
+              const mobile = getVal(row, 'mobile');
+
+              if (!name) errors.push("Name is required");
+              if (!username) errors.push("Username is required");
+              if (!password) errors.push("Password is required");
+              if (!role || !['Admin', 'Operator'].includes(role)) errors.push("Role must be Admin or Operator");
+              if (!mobile) errors.push("Mobile number is required");
+
+              const rowStatus = errors.length === 0 ? 'VALID' : 'INVALID';
+              if (errors.length > 0) isValid = false;
+
+              html += `
+                <tr class="border-b border-slate-100 dark:border-slate-800">
+                  <td class="py-2.5 px-4 font-mono font-bold">${idx + 1}</td>
+                  <td class="py-2.5 px-4">
+                    <span class="font-bold">${name || 'N/A'}</span> (${username || 'N/A'}) - Role: ${role || 'N/A'}
+                    ${errors.length > 0 ? `<p class="text-red-650 dark:text-red-400 text-[10px] mt-0.5">${errors.join(', ')}</p>` : ''}
+                  </td>
+                  <td class="py-2.5 px-4 text-center">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${rowStatus === 'VALID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${rowStatus}</span>
+                  </td>
+                </tr>
+              `;
+            });
+
+          } else {
+            // products
+            const required = ['productname', 'ornamenttype', 'goldweight', 'makingcharge', 'gst'];
+            const missing = required.filter(r => !normalizedHeaders.includes(r));
+            if (missing.length > 0) {
+              throw new Error("Missing required columns: " + missing.join(', '));
+            }
+
+            parsed.data.forEach((row, idx) => {
+              let errors = [];
+              const pName = getVal(row, 'productname') || getVal(row, 'product name');
+              const oType = getVal(row, 'ornamenttype') || getVal(row, 'ornament type');
+              const weightStr = getVal(row, 'goldweight') || getVal(row, 'gold weight');
+              const makingStr = getVal(row, 'makingcharge') || getVal(row, 'making charge');
+              const gstStr = getVal(row, 'gst');
+
+              const weight = parseFloat(weightStr);
+              const making = parseFloat(makingStr);
+              const gst = parseFloat(gstStr);
+
+              if (!pName) errors.push("Product Name is required");
+              if (!oType) errors.push("Ornament Type is required");
+              if (isNaN(weight)) errors.push("Gold Weight must be a number");
+              if (isNaN(making)) errors.push("Making Charge must be a number");
+              if (isNaN(gst)) errors.push("GST must be a number");
+
+              const rowStatus = errors.length === 0 ? 'VALID' : 'INVALID';
+              if (errors.length > 0) isValid = false;
+
+              html += `
+                <tr class="border-b border-slate-100 dark:border-slate-800">
+                  <td class="py-2.5 px-4 font-mono font-bold">${idx + 1}</td>
+                  <td class="py-2.5 px-4">
+                    <span class="font-bold">${pName || 'N/A'}</span> (${oType || 'N/A'}) - Wt: ${weightStr || 'N/A'}g, Making: ₹${makingStr || 'N/A'}
+                    ${errors.length > 0 ? `<p class="text-red-650 dark:text-red-400 text-[10px] mt-0.5">${errors.join(', ')}</p>` : ''}
+                  </td>
+                  <td class="py-2.5 px-4 text-center">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${rowStatus === 'VALID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${rowStatus}</span>
+                  </td>
+                </tr>
+              `;
+            });
+          }
+
+          dryrunTbody.innerHTML = html;
+          dryrunContainer.classList.remove('hidden');
+
+          if (isValid) {
+            msg.className = "bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2";
+            msgText.textContent = "Data validated successfully! Ready to import.";
+          } else {
+            msg.className = "bg-yellow-500/10 border border-yellow-500/20 text-yellow-750 dark:text-yellow-400 p-3 rounded-lg text-xs flex items-center gap-2";
+            msgText.textContent = "Validation complete. Some rows contain validation errors.";
+          }
+
+        } catch (err) {
+          msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+          msgText.textContent = err.message;
+        }
+      });
+    }
+
+    function handleImportSubmit(type) {
+      const fileInput = document.getElementById(`import-${type}-file`);
+      const msg = document.getElementById('import-msg');
+      const msgText = document.getElementById('import-msg-text');
+      const dryrunContainer = document.getElementById('import-dryrun-container');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+        msgText.textContent = "Please select a file to import.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      parseExcelOrCSV(file, function(err, parsed) {
+        if (err) {
+          msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+          msgText.textContent = "Error parsing file: " + err.message;
+          return;
+        }
+
+        try {
+          const normalizedHeaders = parsed.headers.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+          if (type === 'users') {
+            const required = ['name', 'username', 'password', 'role', 'mobile'];
+            const missing = required.filter(r => !normalizedHeaders.includes(r));
+            if (missing.length > 0) {
+              throw new Error("Missing required columns: " + missing.join(', '));
+            }
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let importCount = 0;
+
+            parsed.data.forEach(row => {
+              const name = getVal(row, 'name');
+              const username = getVal(row, 'username');
+              const password = getVal(row, 'password');
+              const role = getVal(row, 'role');
+              const mobile = getVal(row, 'mobile');
+
+              if (name && username && password && role && mobile && ['Admin', 'Operator'].includes(role)) {
+                if (!users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                  users.push({
+                    user_id: users.length > 0 ? Math.max(...users.map(u => u.user_id)) + 1 : 1,
+                    username: username,
+                    password_hash: password,
+                    role: role,
+                    is_active: 1,
+                    created_date: new Date().toISOString()
+                  });
+                  importCount++;
+                }
+              }
+            });
+
+            localStorage.setItem('users', JSON.stringify(users));
+            msg.className = "bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2";
+            msgText.textContent = `Import complete! Successfully imported ${importCount} new user accounts.`;
+            dryrunContainer.classList.add('hidden');
+            fileInput.value = '';
+
+          } else {
+            const required = ['productname', 'ornamenttype', 'goldweight', 'makingcharge', 'gst'];
+            const missing = required.filter(r => !normalizedHeaders.includes(r));
+            if (missing.length > 0) {
+              throw new Error("Missing required columns: " + missing.join(', '));
+            }
+
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            let importCount = 0;
+
+            parsed.data.forEach(row => {
+              const pName = getVal(row, 'productname') || getVal(row, 'product name');
+              const oType = getVal(row, 'ornamenttype') || getVal(row, 'ornament type');
+              const weight = parseFloat(getVal(row, 'goldweight') || getVal(row, 'gold weight'));
+              const making = parseFloat(getVal(row, 'makingcharge') || getVal(row, 'making charge'));
+              const gst = parseFloat(getVal(row, 'gst'));
+
+              if (pName && oType && !isNaN(weight) && !isNaN(making) && !isNaN(gst)) {
+                products.push({
+                  product_id: products.length > 0 ? Math.max(...products.map(p => p.product_id)) + 1 : 1,
+                  product_name: pName,
+                  ornament_type: oType,
+                  gold_weight: weight,
+                  making_charge: making,
+                  gst: gst
+                });
+                importCount++;
+              }
+            });
+
+            localStorage.setItem('products', JSON.stringify(products));
+            msg.className = "bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2";
+            msgText.textContent = `Import complete! Successfully imported ${importCount} new products.`;
+            dryrunContainer.classList.add('hidden');
+            fileInput.value = '';
+            
+            populatePOSProductsDropdown();
+          }
+
+        } catch (err) {
+          msg.className = "bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2";
+          msgText.textContent = "Import failed: " + err.message;
+        }
+      });
+    }
+
+    // ---------------- SETTINGS & LIVE METAL RATES OPERATIONS ----------------
+    function loadSettingsView() {
+      const rates = JSON.parse(localStorage.getItem('settings_rates')) || {
+        gold_24k: 7200.0,
+        gold_22k: 6600.0,
+        gold_18k: 5400.0,
+        silver: 90.0,
+        platinum: 3200.0
+      };
+      document.getElementById('settings-gold-24k').value = rates.gold_24k;
+      document.getElementById('settings-gold-22k').value = rates.gold_22k;
+      document.getElementById('settings-gold-18k').value = rates.gold_18k;
+      document.getElementById('settings-silver').value = rates.silver;
+      document.getElementById('settings-platinum').value = rates.platinum;
+    }
+
+    function handleSettingsSave(event) {
+      event.preventDefault();
+      const rates = {
+        gold_24k: parseFloat(document.getElementById('settings-gold-24k').value) || 0,
+        gold_22k: parseFloat(document.getElementById('settings-gold-22k').value) || 0,
+        gold_18k: parseFloat(document.getElementById('settings-gold-18k').value) || 0,
+        silver: parseFloat(document.getElementById('settings-silver').value) || 0,
+        platinum: parseFloat(document.getElementById('settings-platinum').value) || 0
+      };
+      localStorage.setItem('settings_rates', JSON.stringify(rates));
+      updateLiveRatesMarquee();
+
+      const msg = document.getElementById('settings-status-msg');
+      const msgText = document.getElementById('settings-status-msg-text');
+      msg.classList.remove('hidden');
+      msgText.textContent = "Bullion metal rates updated successfully! These rates will be applied to new items in POS billing.";
+      
+      setTimeout(() => {
+        msg.classList.add('hidden');
+      }, 5000);
+    }
+
+    function updateLiveRatesMarquee() {
+      const rates = JSON.parse(localStorage.getItem('settings_rates')) || {
+        gold_24k: 7200.0,
+        gold_22k: 6600.0,
+        gold_18k: 5400.0,
+        silver: 90.0,
+        platinum: 3200.0
+      };
+      const container = document.getElementById('rates-marquee-content');
+      const bar = document.getElementById('metal-rates-marquee-bar');
+      if (!container || !bar) return;
+
+      if (currentSession) {
+        bar.classList.remove('hidden');
+        const text = `
+          Gold 24K: ₹${rates.gold_24k.toFixed(2)}/g &nbsp;&nbsp;|&nbsp;&nbsp; 
+          Gold 22K: ₹${rates.gold_22k.toFixed(2)}/g &nbsp;&nbsp;|&nbsp;&nbsp; 
+          Gold 18K: ₹${rates.gold_18k.toFixed(2)}/g &nbsp;&nbsp;|&nbsp;&nbsp; 
+          Silver: ₹${rates.silver.toFixed(2)}/g &nbsp;&nbsp;|&nbsp;&nbsp; 
+          Platinum: ₹${rates.platinum.toFixed(2)}/g
+        `;
+        container.innerHTML = `<span class="flex gap-16">${text} &nbsp;&nbsp;|&nbsp;&nbsp; ${text} &nbsp;&nbsp;|&nbsp;&nbsp; ${text}</span>`;
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
     // ---------------- DASHBOARD OPERATIONS ----------------
     function loadDashboardStats() {
       const bills = JSON.parse(localStorage.getItem('bills')) || [];
@@ -2174,15 +3078,60 @@
       }
     }
 
+    function populatePOSProductsDropdown() {
+      const select = document.getElementById('pos-dropdown-select');
+      if (!select) return;
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      
+      let html = '<option value="">-- Choose Product Template --</option>';
+      html += products.map(p => `<option value="prod-${p.product_id}">${p.product_name} (${p.ornament_type} - ${p.gold_weight}g)</option>`).join('');
+      html += '<option value="Custom Item">-- Custom Item --</option>';
+      select.innerHTML = html;
+    }
+
     function handlePOSDropdownChange(preserveValue = false) {
       const select = document.getElementById('pos-dropdown-select');
       const customNameInput = document.getElementById('pos-product-name');
       const customNameContainer = document.getElementById('pos-product-name-container');
       const val = select.value;
 
+      if (!val) {
+        return;
+      }
+
       if (val === 'Custom Item') {
         if (customNameContainer) customNameContainer.classList.remove('hidden');
-        if (!preserveValue) customNameInput.value = '';
+        if (!preserveValue) {
+          customNameInput.value = '';
+          document.getElementById('pos-weight').value = 0;
+          document.getElementById('pos-making').value = 0;
+          document.getElementById('pos-gst').value = 3.0;
+        }
+      } else if (val.startsWith('prod-')) {
+        if (customNameContainer) customNameContainer.classList.add('hidden');
+        const prodId = parseInt(val.replace('prod-', ''));
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const prod = products.find(p => p.product_id === prodId);
+        if (prod) {
+          customNameInput.value = prod.product_name;
+          document.getElementById('pos-weight').value = prod.gold_weight || 0;
+          document.getElementById('pos-making').value = prod.making_charge || 0;
+          document.getElementById('pos-gst').value = prod.gst || 3.0;
+          
+          const rates = JSON.parse(localStorage.getItem('settings_rates')) || {
+            gold_24k: 7200.0,
+            gold_22k: 6600.0,
+            gold_18k: 5400.0,
+            silver: 90.0,
+            platinum: 3200.0
+          };
+          let defaultRate = rates.gold_22k;
+          if (prod.product_name.includes('18K')) defaultRate = rates.gold_18k;
+          else if (prod.product_name.includes('24K')) defaultRate = rates.gold_24k;
+          else if (prod.ornament_type === 'Anklet' || prod.product_name.toLowerCase().includes('silver')) defaultRate = rates.silver;
+          
+          document.getElementById('pos-rate').value = defaultRate;
+        }
       } else {
         if (customNameContainer) customNameContainer.classList.add('hidden');
         customNameInput.value = val;
@@ -3379,6 +4328,8 @@
       }
       
       updateAuthenticationHeader();
+      populatePOSProductsDropdown();
+      updateLiveRatesMarquee();
       
       const activeView = localStorage.getItem('demo_active_view') || 'home';
       if (currentSession && activeView !== 'home') {

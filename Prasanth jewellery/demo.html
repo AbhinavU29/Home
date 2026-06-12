@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prasanth Jewellery - Billing System Interactive Sandbox</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js CDN for high-quality client-side PDF generations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- SheetJS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .font-serif-brand {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .blue-glow {
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.08);
+    }
+    .dark .blue-glow {
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.15);
+    }
+    .fade-in {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background-color: white !important; color: black !important; }
+    }
+    
+    /* Operator/Cashier Theme Overrides (Crimson & Pink Palette) */
+    .operator-theme,
+    .operator-theme body,
+    .operator-theme #viewport-content,
+    .operator-theme aside {
+      background-color: #FFFFFF !important;
+      color: #A50034 !important;
+    }
+    
+    .operator-theme header {
+      background-color: #A50034 !important;
+    }
+    
+    /* Primary color overrides (#A50034) */
+    .operator-theme .bg-blue-600,
+    .operator-theme .bg-blue-800,
+    .operator-theme .bg-blue-900,
+    .operator-theme .bg-blue-950,
+    .operator-theme .bg-indigo-600,
+    .operator-theme .bg-indigo-800 {
+      background-color: #A50034 !important;
+      color: #FFFFFF !important;
+    }
+
+    .operator-theme .hover\:bg-blue-700:hover,
+    .operator-theme .hover\:bg-blue-800:hover,
+    .operator-theme .hover\:bg-indigo-700:hover,
+    .operator-theme .hover\:bg-slate-200:hover {
+      background-color: #8D002C !important; /* Darker Crimson hover */
+      color: #FFFFFF !important;
+    }
+    
+    /* Secondary / Accent color overrides (#F7C6C7) */
+    .operator-theme .bg-blue-50,
+    .operator-theme .bg-indigo-50,
+    .operator-theme .bg-slate-50,
+    .operator-theme .bg-slate-100,
+    .operator-theme .hover\:bg-slate-50:hover,
+    .operator-theme .hover\:bg-slate-100:hover,
+    .operator-theme .dark\:hover\:bg-slate-900:hover {
+      background-color: rgba(247, 198, 199, 0.25) !important;
+      color: #A50034 !important;
+    }
+    
+    /* Text colors (#A50034) */
+    .operator-theme .text-blue-600,
+    .operator-theme .text-indigo-600,
+    .operator-theme .dark\:text-blue-400,
+    .operator-theme .text-blue-200,
+    .operator-theme .text-blue-100 {
+      color: #A50034 !important;
+    }
+    
+    /* Borders (#F7C6C7) */
+    .operator-theme .border-slate-205,
+    .operator-theme .border-slate-200,
+    .operator-theme .border-slate-300,
+    .operator-theme .border-slate-800,
+    .operator-theme .border-blue-800,
+    .operator-theme .border-blue-700,
+    .operator-theme .focus\:border-blue-500:focus {
+      border-color: #F7C6C7 !important;
+    }
+    
+    /* Force internal items in highlighted buttons/headers to white text */
+    .operator-theme .bg-blue-600 *,
+    .operator-theme .bg-blue-900 *,
+    .operator-theme .bg-blue-800 * {
+      color: #FFFFFF !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+  <!-- 1. NAVIGATION HEADER -->
+  <header class="bg-blue-900 dark:bg-slate-900 text-white px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-md no-print">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleMobileSidebar()" class="md:hidden text-white hover:text-slate-200 focus:outline-none">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+      <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+        <i data-lucide="gem" class="w-6 h-6 text-blue-200 animate-pulse"></i>
+        <span class="font-serif-brand text-lg md:text-xl font-bold tracking-widest text-white">PRASANTH JEWELLERY</span>
+      </div>
+    </div>
+    
+    <!-- Right side controls -->
+    <div class="flex items-center gap-4">
+      <!-- Dark mode toggle button -->
+      <button id="theme-toggle-btn" onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-blue-800 dark:hover:bg-slate-800 transition-colors">
+        <i data-lucide="sun" id="dark-icon-sun" class="w-4.5 h-4.5 text-yellow-450 hidden"></i>
+        <i data-lucide="moon" id="dark-icon-moon" class="w-4.5 h-4.5 text-blue-200"></i>
+      </button>
+
+      <!-- Active User Account Info -->
+      <div id="header-user" class="hidden flex items-center gap-2 border-l border-blue-800 pl-4">
+        <div class="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center text-white font-bold border border-blue-700" id="user-avatar-char">
+          U
+        </div>
+        <div class="hidden sm:flex flex-col text-left">
+          <span class="text-xs font-bold leading-tight" id="user-display-name">Username</span>
+          <span class="text-[9px] text-blue-200 uppercase tracking-widest font-semibold" id="user-display-role">Role</span>
+        </div>
+        <button onclick="handleLogout()" class="text-blue-200 hover:text-red-300 p-1.5 rounded-full hover:bg-blue-800 dark:hover:bg-slate-800 transition-colors ml-2" title="Sign Out">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <button id="header-login-btn" onclick="navigate('login')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-md">
+        Staff Invoicing
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. CORE WORKSPACE CONTAINER -->
+  <div class="flex-1 flex relative no-print">
+    
+    <!-- DESKTOP SIDEBAR NAVIGATION (Shown only to logged-in sessions) -->
+    <aside id="app-sidebar" class="hidden md:flex flex-col w-60 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-850 py-6 px-4 space-y-6 shrink-0 shadow-sm no-print">
+      <div class="space-y-1">
+        <p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-550 px-3 pb-2">
+          Billing Module
+        </p>
+        <nav class="space-y-1" id="sidebar-nav-container">
+          <!-- Populated dynamically via JS -->
+        </nav>
+      </div>
+
+      <div class="mt-auto border border-slate-200 dark:border-slate-850 rounded-xl p-3.5 bg-slate-50/50 dark:bg-slate-900/40 text-[10px]">
+        <p class="font-bold text-blue-600 dark:text-blue-400 mb-1">Company Details</p>
+        <div class="space-y-1 text-slate-500 dark:text-slate-400 font-mono">
+          <div class="flex justify-between">
+            <span>Name:</span>
+            <span class="font-bold text-slate-700 dark:text-slate-200">Prasanth Jewellery</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Tax Type:</span>
+            <span class="text-green-600 dark:text-green-400 font-bold">GST Active</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MOBILE SIDEBAR DRAWER -->
+    <div id="mobile-sidebar-drawer" class="fixed inset-0 z-50 md:hidden hidden flex no-print">
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="toggleMobileSidebar()"></div>
+      <div class="relative flex flex-col w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-850 h-full p-6 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-850 pb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="gem" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+            <span class="font-bold text-blue-900 dark:text-blue-100">Prasanth Billing</span>
+          </div>
+          <button onclick="toggleMobileSidebar()" class="text-slate-500 hover:text-blue-600">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <nav class="space-y-1 text-sm font-medium" id="mobile-nav-container">
+          <!-- Populated dynamically via JS -->
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN VIEWPORT CONTENT -->
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto no-print" id="viewport-content">
+      
+      <!-- ================= PUBLIC HOME SHOWROOM VIEW ================= -->
+      <div id="view-home" class="fade-in space-y-12">
+        <section class="relative py-16 text-center bg-gradient-to-b from-blue-50/50 to-white dark:from-slate-950 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800 rounded-2xl p-6">
+          <div class="max-w-3xl mx-auto space-y-6">
+            <div class="inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-3.5 py-1 rounded-full text-[10px] uppercase tracking-widest text-blue-800 dark:text-blue-400 font-bold mb-2">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              Thalassery's Trusted Showroom
+            </div>
+            <h1 class="font-serif-brand text-4xl md:text-5xl font-extrabold tracking-tight text-blue-950 dark:text-white leading-tight">
+              Craftsmanship & Heritage <br/>
+              <span class="text-blue-600 dark:text-blue-400">Guaranteed HUID Purity</span>
+            </h1>
+            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              Welcome to Prasanth Jewellery. Explore pure BIS hallmarked gold necklaces, chains, rings, and bangles with itemized invoice records.
+            </p>
+            <div class="pt-2">
+              <button onclick="navigate('login')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-blue-500/10">
+                Staff Invoicing portal
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= STAFF PORTAL LOGIN VIEW ================= -->
+      <div id="view-login" class="fade-in hidden py-10 flex flex-col justify-center items-center">
+        <div class="max-w-md w-full space-y-6">
+          <div class="text-center space-y-2">
+            <div class="inline-flex p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
+              <i data-lucide="gem" class="w-8 h-8 text-white"></i>
+            </div>
+            <h2 class="font-serif-brand text-2xl md:text-3xl font-bold tracking-widest text-slate-800 dark:text-white">
+              PRASANTH JEWELLERY
+            </h2>
+            <p class="text-[10px] text-blue-600 dark:text-blue-400 tracking-widest uppercase font-bold">
+              Invoicing Ledger Terminal
+            </p>
+          </div>
+
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl p-8 shadow-xl blue-glow">
+            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-6 text-center">
+              Staff Portal Access
+            </h3>
+
+            <div id="login-error" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2 mb-4">
+              <i data-lucide="alert-circle" class="w-4.5 h-4.5 shrink-0"></i>
+              <span>Incorrect credentials.</span>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Username</label>
+                <div class="relative">
+                  <i data-lucide="user" class="absolute left-3.5 top-3 w-4 h-4 text-slate-400"></i>
+                  <input type="text" id="login-username" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none" />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Password</label>
+                <div class="relative">
+                  <i data-lucide="lock" class="absolute left-3.5 top-3 w-4 h-4 text-slate-400"></i>
+                  <input type="password" id="login-password" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none" />
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-xs uppercase tracking-widest transition-all shadow-md">
+                Authenticate Session
+              </button>
+            </form>
+
+            <div class="mt-8 border-t border-slate-200 dark:border-slate-850 pt-5 space-y-3">
+              <p class="text-[9px] text-center text-slate-400 dark:text-slate-550 uppercase tracking-widest font-bold">Demo Shortcuts</p>
+              <div class="grid grid-cols-2 gap-2 text-[10px]">
+                <button onclick="useDemoAccount('admin', 'admin123')" class="bg-slate-50 hover:bg-blue-50 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 py-2 rounded-lg text-left px-3 transition-colors">
+                  <b class="text-slate-700 dark:text-slate-200 block">Admin Account</b>
+                  <span>admin / admin123</span>
+                </button>
+                <button onclick="useDemoAccount('operator', 'operator123')" class="bg-slate-50 hover:bg-blue-50 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 py-2 rounded-lg text-left px-3 transition-colors">
+                  <b class="text-slate-700 dark:text-slate-200 block">Operator Cashier</b>
+                  <span>operator / operator123</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= PORTAL EXECUTIVE DASHBOARD VIEW ================= -->
+      <div id="view-dashboard" class="fade-in hidden space-y-8">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white">
+            Billing Command Dashboard
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Real-time billing analytics and recent transactions.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-950 p-6 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-550 uppercase tracking-widest font-bold block">Total Revenue</span>
+              <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" id="dash-turnover">₹0.00</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-blue-600">
+              <i data-lucide="indian-rupee" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-950 p-6 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-550 uppercase tracking-widest font-bold block">Total Invoices</span>
+              <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" id="dash-bills-count">0</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-blue-600">
+              <i data-lucide="receipt" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-950 p-6 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-550 uppercase tracking-widest font-bold block">Registered Clients</span>
+              <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" id="dash-cust-count">0</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-blue-600">
+              <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-950 rounded-xl p-6 shadow-xs blue-glow">
+          <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+            <i data-lucide="clock" class="w-5 h-5 text-blue-600"></i>
+            <h3 class="font-serif-brand text-lg font-bold text-slate-800 dark:text-white font-serif">Recent Invoices Issued</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
+                  <th class="py-3 px-4">Purchase ID</th>
+                  <th class="py-3 px-4">Customer Name</th>
+                  <th class="py-3 px-4">Phone Number</th>
+                  <th class="py-3 px-4">Date</th>
+                  <th class="py-3 px-4 text-right">Subtotal</th>
+                  <th class="py-3 px-4 text-right">Discount</th>
+                  <th class="py-3 px-4 text-right">Total Paid</th>
+                  <th class="py-3 px-4 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="dash-recent-bills-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-sans">
+                <!-- Dyn -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= PORTAL POS BILLING VIEW ================= -->
+      <div id="view-billing" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white" id="billing-title-text">
+            POS Billing Console
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Generate tax-compliant jewelry sales invoices, calculate gold/mrp values, and print receipts.
+          </p>
+        </div>
+
+        <div id="billing-error-box" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-4 rounded-xl text-xs flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+          <span id="billing-error-msg">Please correct validation errors.</span>
+        </div>
+
+        <div class="grid class grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          <!-- Left panel inputs -->
+          <div class="lg:col-span-3 space-y-6">
+            
+            <!-- Customer select and Search row -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs space-y-4 blue-glow">
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-1">
+                  Customer Record Identification
+                </label>
+                <div class="flex gap-2 mb-2">
+                  <div class="relative flex-1">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="bill-search-query" placeholder="Search by Customer Name, Phone, or Purchase ID..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none" />
+                  </div>
+                  <button type="button" onclick="searchCustomerPOS()" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
+                    Search
+                  </button>
+                </div>
+                <div id="bill-search-status" class="hidden text-[10px] text-blue-600 dark:text-blue-400 font-semibold px-3 py-1 bg-blue-50/50 dark:bg-blue-950/20 rounded border border-blue-100">
+                  Search matched...
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <select id="bill-customer-id" onchange="handlePOSCustomerChange()" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none">
+                  <option value="">-- Choose Customer Profile --</option>
+                  <!-- Populated via JS -->
+                </select>
+                <button type="button" onclick="openCustModal()" class="bg-blue-600 text-white hover:bg-blue-700 p-2.5 rounded-lg flex items-center justify-center transition-colors shadow-md" title="Register New Customer">
+                  <i data-lucide="user-plus" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <!-- Billing Date Picker and Autofill -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <div class="space-y-1">
+                  <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Billing Date + Time</label>
+                  <div class="relative">
+                    <i data-lucide="calendar" class="absolute left-3 top-2.5 w-4 h-4 text-slate-400"></i>
+                    <input type="datetime-local" id="bill-date-input" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none text-slate-800 dark:text-slate-100" />
+                  </div>
+                </div>
+                <div id="bill-date-autofill-btn-wrapper" class="flex items-end pb-1">
+                  <button type="button" onclick="autofillTodayDate()" class="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Auto-fill Current Date & Time
+                  </button>
+                </div>
+              </div>
+
+              <!-- Customer Previous Purchases Panel -->
+              <div id="cust-prev-purchases-container" class="hidden border-t border-slate-200 dark:border-slate-800 pt-3 space-y-2">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Customer's Previous Purchases</span>
+                <div id="cust-prev-purchases-list" class="max-h-24 overflow-y-auto space-y-1 font-mono text-[10px]">
+                  <!-- Added dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Line Item specifications -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs space-y-4 blue-glow">
+              <h3 class="font-serif-brand text-md text-slate-800 dark:text-white font-bold">
+                Line Item Specification
+              </h3>
+              
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                
+                <!-- Predefined select -->
+                <div class="space-y-1 col-span-2 sm:col-span-4">
+                  <label class="text-slate-400 block mb-0.5 font-sans font-semibold">Ornament Type</label>
+                  <select id="pos-dropdown-select" onchange="handlePOSDropdownChange()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-2 text-xs text-slate-800 dark:text-slate-100">
+                    <option value="">-- Select Type --</option>
+                    <!-- Predefined values -->
+                  </select>
+                </div>
+
+                <div id="pos-product-name-container" class="space-y-1 col-span-2 sm:col-span-4 hidden">
+                  <label class="text-slate-400 block mb-0.5 font-sans font-semibold">Description / Custom Name *</label>
+                  <input type="text" id="pos-product-name" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100 focus:outline-none" placeholder="e.g. Gold Ring 22K with Ruby..." />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">Quantity *</label>
+                  <input type="number" id="pos-qty" value="1" min="1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">Gold Weight (g)</label>
+                  <input type="number" step="0.001" id="pos-weight" value="0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">Rate / Gram (₹)</label>
+                  <input type="number" step="0.01" id="pos-rate" value="0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">Fixed MRP (₹)</label>
+                  <input type="number" id="pos-mrp" value="0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">Making Charge (₹)</label>
+                  <input type="number" id="pos-making" value="0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-405 block mb-0.5">Item Discount (₹)</label>
+                  <input type="number" id="pos-item-discount" value="0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-slate-400 block mb-0.5">GST Tax %</label>
+                  <input type="number" step="0.1" id="pos-gst" value="3.0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none font-mono" />
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="button" id="pos-add-item-btn" onclick="handleAddPOSItem()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg text-xs transition-all shadow-sm">
+                    Save Record
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Invoice ledger table -->
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs blue-glow">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider bg-slate-50/50">
+                      <th class="p-3.5 px-4">Sr</th>
+                      <th class="p-3.5 px-4">Description</th>
+                      <th class="p-3.5 px-4 text-center">Qty</th>
+                      <th class="p-3.5 px-4 text-right">Gold Wt</th>
+                      <th class="p-3.5 px-4 text-right">Rate/g</th>
+                      <th class="p-3.5 px-4 text-right">MRP</th>
+                      <th class="p-3.5 px-4 text-right">Making</th>
+                      <th class="p-3.5 px-4 text-right">Discount</th>
+                      <th class="p-3.5 px-4 text-right">GST %</th>
+                      <th class="p-3.5 px-4 text-right">Item Total</th>
+                      <th class="p-3.5 px-4 text-center">Remove</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pos-billing-items-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
+                    <!-- Added dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right panel summaries -->
+          <div class="space-y-6">
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-xs space-y-5 blue-glow">
+              <h3 class="font-serif-brand text-lg text-slate-800 dark:text-white font-bold border-b border-slate-100 pb-3 flex items-center gap-1.5">
+                <i data-lucide="receipt" class="w-5 h-5 text-blue-600"></i>
+                Invoice Calculation
+              </h3>
+
+              <div class="space-y-3.5 text-xs text-slate-600 dark:text-slate-350">
+                <div class="flex justify-between font-mono">
+                  <span>Subtotal Value:</span>
+                  <span class="font-bold text-slate-800 dark:text-white" id="pos-calc-subtotal">₹0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>Global Discount (₹):</span>
+                  <input type="number" id="pos-calc-discount" value="0" min="0" oninput="recalculatePOSSummary()" class="w-24 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded px-2.5 py-1 text-right font-mono text-xs focus:outline-none text-slate-800 dark:text-slate-100" />
+                </div>
+                <div class="border-t border-slate-100 pt-4 flex justify-between items-baseline font-mono">
+                  <span class="font-sans font-bold text-xs uppercase text-slate-400">Grand Total:</span>
+                  <strong class="text-2xl text-blue-600 font-extrabold" id="pos-calc-grandtotal">₹0.00</strong>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="pos-save-btn" onclick="savePOSDraftRecord()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-250 font-bold py-3 rounded-lg text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                  <i data-lucide="save" class="w-4.5 h-4.5"></i> Save Draft
+                </button>
+                <button type="button" id="pos-submit-btn" onclick="submitPOSInvoice()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1.5">
+                  <i data-lucide="receipt" class="w-4.5 h-4.5"></i> Generate Invoice
+                </button>
+              </div>
+              
+              <button type="button" id="pos-cancel-edit-btn" onclick="cancelPOSEditFlow()" class="w-full border border-slate-200 text-slate-500 py-2 rounded-lg text-xs font-bold uppercase transition-colors hidden">
+                Cancel Edit
+              </button>
+            </div>          </div>
+
+
+          </div>
+        </div>
+
+      <!-- ================= PORTAL CUSTOMERS CRUD VIEW ================= -->
+      <div id="view-crm" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4 flex justify-between items-center">
+          <div>
+            <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white">
+              Customer Registry
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Create, view, update, and manage customer profile records for billing tracking.
+            </p>
+          </div>
+          <button onclick="openCustModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1.5 transition-colors">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Register Customer
+          </button>
+        </div>
+
+        <!-- Advanced Filters Panel -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs space-y-4 blue-glow">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Filter Profiles Registry
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="relative">
+              <i data-lucide="user" class="absolute left-3 top-3 w-4 h-4 text-slate-400 dark:text-slate-500"></i>
+              <input 
+                type="text" 
+                id="crm-search-name"
+                oninput="populateCRMTable()"
+                placeholder="Filter by Customer Name..." 
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div class="relative">
+              <i data-lucide="phone" class="absolute left-3 top-3 w-4 h-4 text-slate-400 dark:text-slate-500"></i>
+              <input 
+                type="text" 
+                id="crm-search-phone"
+                oninput="populateCRMTable()"
+                placeholder="Filter by Phone Number..." 
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div class="relative">
+              <i data-lucide="map-pin" class="absolute left-3 top-3 w-4 h-4 text-slate-400 dark:text-slate-500"></i>
+              <input 
+                type="text" 
+                id="crm-search-address"
+                oninput="populateCRMTable()"
+                placeholder="Filter by Residential Address..." 
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-1">
+            <button 
+              onclick="clearCRMFilters()"
+              class="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900 shadow-sm transition-colors"
+            >
+              Clear Filters
+            </button>
+            <button 
+              onclick="populateCRMTable()"
+              class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1.5 px-4 py-2 rounded-lg shadow transition-colors"
+            >
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              Refresh Registry
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden blue-glow">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-bold uppercase tracking-wider bg-slate-50/50 dark:bg-slate-950/50">
+                <th class="py-3 px-5">ID</th>
+                <th class="py-3 px-5">Customer Name</th>
+                <th class="py-3 px-5">Phone Number</th>
+                <th class="py-3 px-5">Residential Address</th>
+                <th id="crm-th-actions" class="py-3 px-5 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="crm-customers-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Dyn -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= PORTAL TRANSACTION REGISTRY (REPORTS) VIEW ================= -->
+      <div id="view-reports" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white">
+            Transactions Registry
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Query invoice records, view detailed item breakdowns, and inspect billing transactions.
+          </p>
+        </div>
+
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs space-y-4 blue-glow">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Search Ledger Filters</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4 text-xs">
+            <div class="relative">
+              <i data-lucide="hash" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="text" id="report-filter-serial" oninput="populateReportsTable()" placeholder="Purchase ID..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="relative">
+              <i data-lucide="phone" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="text" id="report-filter-phone" oninput="populateReportsTable()" placeholder="Phone..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="relative">
+              <i data-lucide="user" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="text" id="report-filter-name" oninput="populateReportsTable()" placeholder="Customer Name..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="relative">
+              <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="text" id="report-filter-product" oninput="populateReportsTable()" placeholder="Product Name..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="relative">
+              <i data-lucide="calendar" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="date" id="report-filter-from-date" oninput="populateReportsTable()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="relative">
+              <i data-lucide="calendar" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+              <input type="date" id="report-filter-to-date" oninput="populateReportsTable()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2.5 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 pt-2">
+            <button onclick="clearReportsFilters()" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-350 border border-slate-200 px-3.5 py-2 rounded-lg bg-white shadow-sm flex items-center gap-1">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i> Clear Filters
+            </button>
+            <button onclick="exportReportsToExcel()" class="text-xs font-bold text-white bg-green-600 hover:bg-green-700 flex items-center gap-1.5 px-4 py-2 rounded-lg shadow transition-colors">
+              <i data-lucide="file-down" class="w-3.5 h-3.5"></i> Export to Excel
+            </button>
+            <button onclick="populateReportsTable()" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1.5 px-4 py-2 rounded-lg shadow transition-colors">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Registry
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl shadow-xs overflow-hidden blue-glow">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider bg-slate-50/50">
+                  <th class="py-3 px-5">Purchase ID</th>
+                  <th class="py-3 px-5">Customer Name</th>
+                  <th class="py-3 px-5">Phone Number</th>
+                  <th class="py-3 px-5">Date</th>
+                  <th class="py-3 px-5 text-right">Subtotal</th>
+                  <th class="py-3 px-5 text-right">Discount</th>
+                  <th class="py-3 px-5 text-right">Grand Total</th>
+                  <th class="py-3 px-5 text-center">Action Options</th>
+                </tr>
+              </thead>
+              <tbody id="reports-bills-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Dyn -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= PORTAL ANALYTICS VIEW ================= -->
+      <div id="view-analytics" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+          <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white">
+            Analytics & Reports
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Real-time business insights, sales trends, customer performance, and product analytics.
+          </p>
+        </div>
+
+        <!-- Filters section -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs space-y-4 blue-glow">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Search Analytics Filters</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+            <div class="space-y-1">
+              <label class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">From Date</label>
+              <input type="date" id="analytics-filter-from" oninput="calculateAnalytics()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">To Date</label>
+              <input type="date" id="analytics-filter-to" oninput="calculateAnalytics()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Purchase ID</label>
+              <input type="text" id="analytics-filter-serial" oninput="calculateAnalytics()" placeholder="e.g. PJ2026..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Customer Name</label>
+              <input type="text" id="analytics-filter-name" oninput="calculateAnalytics()" placeholder="Filter by Name..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 focus:outline-none text-slate-800 dark:text-slate-100" />
+            </div>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button onclick="clearAnalyticsFilters()" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-350 border border-slate-200 dark:border-slate-800 px-3.5 py-2 rounded-lg bg-white dark:bg-slate-950">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-bold block">Total Revenue</span>
+              <h3 class="text-xl font-extrabold text-slate-800 dark:text-white" id="analytics-kpi-sales">₹0.00</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl text-blue-600">
+              <i data-lucide="indian-rupee" class="w-5 h-5"></i>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-bold block">Invoice Count</span>
+              <h3 class="text-xl font-extrabold text-slate-800 dark:text-white" id="analytics-kpi-bills">0</h3>
+            </div>
+            <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl text-indigo-600">
+              <i data-lucide="receipt" class="w-5 h-5"></i>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-bold block">Unique Customers</span>
+              <h3 class="text-xl font-extrabold text-slate-800 dark:text-white" id="analytics-kpi-customers">0</h3>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-green-950/40 rounded-xl text-green-605">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl flex items-center justify-between shadow-xs blue-glow">
+            <div class="space-y-1">
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-bold block">Avg Bill Value</span>
+              <h3 class="text-xl font-extrabold text-slate-800 dark:text-white" id="analytics-kpi-avg">₹0.00</h3>
+            </div>
+            <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl text-amber-605">
+              <i data-lucide="trending-up" class="w-5 h-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual HTML/SVG charts and lists -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Daily Sales Trend Chart Card -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs blue-glow md:col-span-2 space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="calendar-days" class="w-4 h-4 text-blue-600"></i> Sales Over Time (Daily / Monthly)
+            </h3>
+            <div class="relative h-48 w-full border-b border-l border-slate-250 dark:border-slate-800 flex items-end justify-around pb-1.5 pl-2 font-mono text-[9px] text-slate-400 select-none pt-4" id="analytics-trend-chart">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Top Selling Ornaments list -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-5 rounded-xl shadow-xs blue-glow space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="gem" class="w-4 h-4 text-amber-550"></i> Top Ornaments
+            </h3>
+            <div class="space-y-3" id="analytics-top-ornaments-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakdown Tables -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Sales by Date table -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs blue-glow flex flex-col h-72">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Sales by Date</span>
+            </div>
+            <div class="flex-1 overflow-y-auto text-xs">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 uppercase tracking-wider">
+                    <th class="py-2 px-4">Date</th>
+                    <th class="py-2 px-4 text-right">Invoices</th>
+                    <th class="py-2 px-4 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table-date" class="divide-y divide-slate-100 dark:divide-slate-900">
+                  <!-- Dyn -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sales by Customer table -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs blue-glow flex flex-col h-72">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Sales by Customer</span>
+            </div>
+            <div class="flex-1 overflow-y-auto text-xs">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 uppercase tracking-wider">
+                    <th class="py-2 px-4">Customer</th>
+                    <th class="py-2 px-4 text-right">Invoices</th>
+                    <th class="py-2 px-4 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table-customer" class="divide-y divide-slate-100 dark:divide-slate-900">
+                  <!-- Dyn -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sales by Product table -->
+          <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs blue-glow flex flex-col h-72">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Sales by Product</span>
+            </div>
+            <div class="flex-1 overflow-y-auto text-xs">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 dark:border-slate-800 text-[10px] text-slate-400 uppercase tracking-wider">
+                    <th class="py-2 px-4">Ornament</th>
+                    <th class="py-2 px-4 text-right">Qty</th>
+                    <th class="py-2 px-4 text-right">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table-product" class="divide-y divide-slate-100 dark:divide-slate-900">
+                  <!-- Dyn -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= PORTAL USER MANAGEMENT VIEW ================= -->
+      <div id="view-users" class="fade-in hidden space-y-6">
+        <div class="border-b border-slate-200 dark:border-slate-800 pb-4 flex justify-between items-center">
+          <div>
+            <h1 class="font-serif-brand text-3xl font-bold tracking-wide text-slate-800 dark:text-white flex items-center gap-2">
+              User Access Management
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Create employee accounts, assign roles, disable access, reset passwords, and audit login privileges.
+            </p>
+          </div>
+          <button onclick="openUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1.5 transition-colors">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Add New User
+          </button>
+        </div>
+
+        <div id="users-status-msg" class="hidden bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 p-3 rounded-lg text-xs flex items-center gap-2">
+          <i data-lucide="user-check" class="w-4 h-4"></i>
+          <span id="users-status-msg-text"></span>
+        </div>
+        <div id="users-error-msg" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4.5 h-4.5"></i>
+          <span id="users-error-msg-text"></span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+          <div class="relative flex-1 max-w-sm">
+            <input 
+              type="text" 
+              id="users-search-query" 
+              oninput="populateUsersTable()"
+              placeholder="Search users by name or role..." 
+              class="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-xs text-slate-850 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <button 
+            onclick="populateUsersTable()"
+            class="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-650 dark:text-slate-350 transition-colors shadow-sm"
+          >
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            Refresh Users
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden blue-glow">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-150 dark:border-slate-800 text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50 dark:bg-slate-950/50">
+                  <th class="py-3 px-5">ID</th>
+                  <th class="py-3 px-5">Username</th>
+                  <th class="py-3 px-5">System Role</th>
+                  <th class="py-3 px-5">Access Status</th>
+                  <th class="py-3 px-5">Created Date</th>
+                  <th class="py-3 px-5 text-center">Admin Controls</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Dyn -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- 3. INLINE DIALOGS (MODALS) -->
+
+  <!-- MODAL: Customer Registration Form -->
+  <div id="cust-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeCustModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-2xl max-w-sm w-full p-6 relative z-10 space-y-4 shadow-2xl blue-glow">
+      <button onclick="closeCustModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 id="cust-modal-title" class="font-serif-brand text-lg text-slate-800 dark:text-white font-bold border-b border-slate-100 pb-2">
+        Register Customer Record
+      </h3>
+      <form onsubmit="handleCustFormSubmit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="cust-edit-id" value="" />
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Full Name *</label>
+          <input type="text" id="cust-name-input" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Phone Number *</label>
+          <input type="text" id="cust-phone-input" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-slate-800 focus:outline-none" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Residential Address</label>
+          <textarea id="cust-address-input" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-slate-800 focus:outline-none h-16" placeholder="Street and City info"></textarea>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeCustModal()" class="flex-1 border border-slate-200 py-2 rounded-lg text-slate-550 hover:bg-slate-50 text-xs font-semibold">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-lg text-xs shadow">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: User Add/Edit Form -->
+  <div id="user-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeUserModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 relative z-10 space-y-5 shadow-2xl blue-glow">
+      <button onclick="closeUserModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:text-slate-500">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 id="user-modal-title" class="font-serif-brand text-xl text-slate-800 dark:text-white font-bold border-b border-slate-100 dark:border-slate-850 pb-3">
+        Register New User
+      </h3>
+      <div id="user-modal-error" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="user-modal-error-text"></span>
+      </div>
+      
+      <form onsubmit="handleUserSubmit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="user-modal-id" />
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Username *</label>
+          <input type="text" id="user-modal-username" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" />
+        </div>
+        <div class="space-y-1" id="user-modal-pass-container">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Password *</label>
+          <input type="password" id="user-modal-password" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" placeholder="Enter strong password" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Access Role *</label>
+          <select id="user-modal-role" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none">
+            <option value="Operator">Operator / Cashier</option>
+            <option value="Admin">Administrator</option>
+          </select>
+        </div>
+        <div class="space-y-1 hidden" id="user-modal-status-container">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 block">Account Status</label>
+          <select id="user-modal-status" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none">
+            <option value="1">Enabled (Active)</option>
+            <option value="0">Disabled (Locked)</option>
+          </select>
+        </div>
+        <div class="flex gap-3 pt-3">
+          <button type="button" onclick="closeUserModal()" class="flex-1 border border-slate-200 dark:border-slate-800 text-slate-550 dark:text-slate-400 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: User Password Reset Form -->
+  <div id="user-reset-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeUserResetModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 relative z-10 space-y-5 shadow-2xl blue-glow">
+      <button onclick="closeUserResetModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:text-slate-500">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 class="font-serif-brand text-xl text-slate-800 dark:text-white font-bold border-b border-slate-100 dark:border-slate-850 pb-3 flex items-center gap-1.5">
+        <i data-lucide="key" class="w-5 h-5 text-amber-500"></i> Reset Password
+      </h3>
+      <div id="user-reset-modal-info" class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border text-[10px] text-slate-500 font-medium border-slate-200 dark:border-slate-800"></div>
+      <div id="user-reset-modal-error" class="hidden bg-red-500/10 border border-red-500/20 text-red-750 dark:text-red-400 p-3 rounded-lg text-xs flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="user-reset-modal-error-text"></span>
+      </div>
+      
+      <form onsubmit="handleUserResetSubmit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="user-reset-modal-id" />
+        <div class="space-y-1">
+          <label class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">New Password *</label>
+          <input type="password" id="user-reset-modal-password" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeUserResetModal()" class="flex-1 border border-slate-200 dark:border-slate-800 text-slate-550 dark:text-slate-400 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-xs">Confirm Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: POS Generation Success Dialog -->
+  <div id="bill-success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeBillSuccessModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-2xl max-w-sm w-full p-6 relative z-10 space-y-5 shadow-2xl blue-glow text-center">
+      <div class="space-y-2">
+        <div class="inline-flex p-3 bg-green-500/10 text-green-600 rounded-full mb-2">
+          <i data-lucide="badge-check" class="w-12 h-12"></i>
+        </div>
+        <h3 class="font-serif-brand text-2xl font-bold text-slate-800 dark:text-white">Invoice Registered</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">
+          Purchase ID: <b id="success-bill-serial">PJYYYYMMDDXXXX</b>
+        </p>
+      </div>
+
+      <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl text-xs space-y-1.5 text-left border border-slate-200">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Customer Name:</span>
+          <span class="font-bold text-slate-800 dark:text-white" id="success-bill-custname">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Phone Number:</span>
+          <span class="font-semibold text-slate-800 dark:text-white font-mono" id="success-bill-phone">-</span>
+        </div>
+        <div class="flex justify-between border-t border-slate-200/50 pt-2 font-bold text-slate-800 dark:text-white">
+          <span>Grand Total:</span>
+          <span class="text-blue-600 font-mono" id="success-bill-total">₹0.00</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <button type="button" onclick="printBillFromModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-1.5">
+          <i data-lucide="printer" class="w-4.5 h-4.5"></i> Print Bill
+        </button>
+        <button type="button" onclick="downloadPOSPDFFromModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-1.5">
+          <i data-lucide="file-down" class="w-4.5 h-4.5"></i> Download PDF
+        </button>
+        <button type="button" onclick="sharePOSWhatsAppFromModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-1.5 col-span-2">
+          <i data-lucide="message-circle" class="w-4.5 h-4.5"></i> Share to WhatsApp
+        </button>
+        <button type="button" onclick="closeBillSuccessModal()" class="border border-slate-200 text-slate-500 hover:bg-slate-50 font-bold py-3 rounded-lg uppercase transition-colors col-span-2">Close Dialog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Bill Itemized Details -->
+  <div id="bill-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onclick="closeBillDetailModal()"></div>
+    <div class="bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-2xl max-w-2xl w-full p-6 relative z-10 space-y-5 shadow-2xl blue-glow max-h-[85vh] overflow-y-auto">
+      <button onclick="closeBillDetailModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="space-y-6 text-xs text-slate-800 dark:text-slate-100">
+        <div class="border-b border-slate-200 pb-3">
+          <h3 class="font-serif-brand text-lg font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+            <i data-lucide="history" class="w-5 h-5 text-blue-600"></i>
+            Invoice Details: <span class="font-mono text-blue-600 font-bold" id="detail-bill-serial"></span>
+          </h3>
+          <p class="text-[10px] text-slate-400 font-semibold uppercase mt-1" id="detail-bill-company"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200">
+          <div>
+            <span class="text-slate-400 block mb-0.5">Customer Name:</span>
+            <strong class="text-slate-800 dark:text-white" id="detail-bill-custname"></strong>
+          </div>
+          <div>
+            <span class="text-slate-400 block mb-0.5">Customer Phone:</span>
+            <strong class="text-slate-800 dark:text-white font-mono" id="detail-bill-phone"></strong>
+          </div>
+          <div>
+            <span class="text-slate-400 block mb-0.5">Billing Date:</span>
+            <strong class="text-slate-800 dark:text-white font-mono" id="detail-bill-date"></strong>
+          </div>
+          <div>
+            <span class="text-slate-400 block mb-0.5">Billing Cashier ID:</span>
+            <strong class="text-slate-800 dark:text-white font-mono" id="detail-bill-creator"></strong>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-600 dark:text-slate-350">Invoice Itemized Breakdown</h4>
+          <div class="border border-slate-200 dark:border-slate-850 rounded-xl overflow-hidden bg-white dark:bg-slate-950">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-850 text-slate-400 font-bold">
+                  <th class="p-3">Ornament</th>
+                  <th class="p-3 text-center">Qty</th>
+                  <th class="p-3 text-right">Gold Wt</th>
+                  <th class="p-3 text-right">Rate/g</th>
+                  <th class="p-3 text-right">MRP</th>
+                  <th class="p-3 text-right">Discount</th>
+                  <th class="p-3 text-right">GST %</th>
+                  <th class="p-3 text-right font-bold">Total</th>
+                </tr>
+              </thead>
+              <tbody id="detail-bill-items-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-[11px]">
+                <!-- Added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 pt-4 flex flex-col items-end space-y-1.5 font-mono">
+          <div class="flex justify-between w-48 text-[11px] text-slate-400 font-semibold">
+            <span>Subtotal:</span>
+            <span id="detail-bill-subtotal"></span>
+          </div>
+          <div class="flex justify-between w-48 text-[11px] font-semibold text-red-500">
+            <span>Discount:</span>
+            <span id="detail-bill-discount"></span>
+          </div>
+          <div class="flex justify-between w-48 border-t border-slate-200 pt-2 text-xs font-extrabold text-slate-800">
+            <span>Grand Total:</span>
+            <span class="text-blue-600" id="detail-bill-grandtotal"></span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+          <span class="text-[10px] text-slate-400 font-semibold uppercase">Compliant Invoicing</span>
+          <div class="flex gap-2">
+            <button type="button" onclick="printBillDetails()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+              <i data-lucide="printer" class="w-4 h-4"></i> Print Invoice
+            </button>
+            <button type="button" onclick="downloadBillPDF(parseInt(document.getElementById('bill-detail-modal').dataset.billId))" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+              <i data-lucide="file-down" class="w-4 h-4"></i> Download PDF
+            </button>
+            <button id="modal-edit-bill-btn" type="button" onclick="editBillFromModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1 hidden">
+              <i data-lucide="edit-2" class="w-4 h-4"></i> Edit Bill
+            </button>
+            <button type="button" onclick="closeBillDetailModal()" class="border border-slate-200 text-slate-550 py-2 px-4 rounded-lg font-semibold hover:bg-slate-50">Close Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PRINTABLE BLANK INVOICE TEMPLATE (ALWAYS WHITE) ================= -->
+  <div id="print-view-area" class="print-only hidden p-8 bg-white text-slate-900 text-xs font-sans leading-normal">
+    <!-- Header -->
+    <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-7 h-7 bg-blue-900 rounded flex items-center justify-center text-white font-bold text-sm">💎</div>
+          <h1 class="font-serif-brand text-2xl font-bold tracking-wider text-slate-900">PRASANTH JEWELLERY</h1>
+        </div>
+        <p class="text-[10px] text-slate-550 uppercase tracking-widest">HUID Purity Verified Ornaments</p>
+        <p class="text-[9px] text-slate-500 mt-1">M M Road, Thalassery</p>
+        <p class="text-[9px] text-slate-400">Phone: 9846936111 | Support: billing@prasanthjewellery.com</p>
+      </div>
+      <div class="text-right">
+        <h2 class="text-lg font-bold text-slate-800 uppercase tracking-widest">Tax Invoice</h2>
+        <div class="mt-2 space-y-0.5 text-[10px] text-slate-600">
+          <div>Purchase ID: <strong id="print-bill-serial" class="font-mono">PJYYYYMMDDXXXX</strong></div>
+          <div>Date: <strong id="print-bill-date" class="font-mono">YYYY-MM-DD</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client metadata -->
+    <div class="my-6 border border-slate-350 p-4 rounded bg-slate-50/50">
+      <span class="text-slate-500 font-bold block mb-1 text-[9px] uppercase tracking-wider">Invoice To:</span>
+      <div class="text-[11px] font-bold text-slate-800" id="print-cust-name">-</div>
+      <div class="text-[10px] font-mono text-slate-600 mt-1" id="print-cust-phone">-</div>
+    </div>
+
+    <!-- Items table -->
+    <table class="w-full text-left text-xs border-collapse mt-4 border border-slate-350 table-fixed">
+      <thead>
+        <tr class="bg-slate-100 text-slate-800 border-b border-slate-350 font-bold uppercase text-[9px] tracking-wider">
+          <th class="p-2 border border-slate-350 w-[24%]">Ornament</th>
+          <th class="p-2 border border-slate-350 text-center w-[6%]">Qty</th>
+          <th class="p-2 border border-slate-350 text-right w-[11%]">Gold Wt</th>
+          <th class="p-2 border border-slate-350 text-right w-[12%]">Rate</th>
+          <th class="p-2 border border-slate-350 text-right w-[12%]">MRP</th>
+          <th class="p-2 border border-slate-350 text-right w-[11%]">Discount</th>
+          <th class="p-2 border border-slate-350 text-right w-[10%]">GST %</th>
+          <th class="p-2 border border-slate-350 text-right font-bold w-[14%]">Total</th>
+        </tr>
+      </thead>
+      <tbody id="print-items-tbody" class="font-mono text-[10px] divide-y divide-slate-300">
+        <!-- Dyn -->
+      </tbody>
+    </table>
+
+    <div class="mt-6 flex flex-col items-end space-y-1">
+      <div class="flex justify-between w-48 text-[10px] text-slate-500 font-bold font-mono">
+        <span>Subtotal:</span>
+        <span id="print-bill-subtotal">₹0.00</span>
+      </div>
+      <div class="flex justify-between w-48 text-[10px] text-red-600 font-bold font-mono border-b pb-1">
+        <span>Global Discount:</span>
+        <span id="print-bill-discount">-₹0.00</span>
+      </div>
+      <div class="flex justify-between w-48 pt-1 text-xs font-extrabold text-slate-900 font-mono">
+        <span>Grand Total:</span>
+        <span id="print-bill-grandtotal">₹0.00</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 mt-16 pt-8 border-t border-dashed border-slate-400 text-center text-[10px] text-slate-500">
+      <div>
+        <p class="font-semibold italic">"Thank you for choosing Prasanth Jewellery. Visit Again."</p>
+      </div>
+      <div class="flex flex-col items-center justify-end">
+        <div class="w-32 border-b border-slate-800 mb-1"></div>
+        <p class="font-bold text-slate-800">Authorized Signatory</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Native Interactive Javascript Logic -->
+  <script>
+    // ---------------- LOCALSTORAGE DATABASE & INITIAL SEEDS ----------------
+    if (!localStorage.getItem('users')) {
+      const initialUsers = [
+        { user_id: 1, username: 'admin', password_hash: 'admin123', role: 'Admin', created_date: new Date().toISOString() },
+        { user_id: 2, username: 'operator', password_hash: 'operator123', role: 'Operator', created_date: new Date().toISOString() }
+      ];
+      localStorage.setItem('users', JSON.stringify(initialUsers));
+    }
+
+    if (!localStorage.getItem('customers')) {
+      const initialCustomers = [
+        { customer_id: 1, customer_name: 'Abhinav Sharma', phone_number: '9876543210', address: '123 Bazaar Road, Coimbatore' },
+        { customer_id: 2, customer_name: 'Aditi Iyer', phone_number: '9566224411', address: '45 Temple St, Pollachi' }
+      ];
+      localStorage.setItem('customers', JSON.stringify(initialCustomers));
+    }
+
+    if (!localStorage.getItem('bills')) {
+      const initialBills = [
+        { 
+          bill_id: 1, 
+          purchase_id: 'PJ202606010001', 
+          customer_name: 'Abhinav Sharma', 
+          phone_number: '9876543210', 
+          company_name: 'Prasanth Jewellery',
+          date: '2026-06-01', 
+          subtotal: 46350.0, 
+          discount: 500.0, 
+          total_amount: 45850.0, 
+          created_by: 1,
+          items: [
+            { item_id: 1, product_name: 'Gold Ring 22K', quantity: 1, weight_gold_g: 6.0, rate_per_gram: 6600.0, MRP: 5000.0, making_charge: 180.0, discount: 0.0, GST: 3.0, item_total: 46350.0 }
+          ]
+        }
+      ];
+      localStorage.setItem('bills', JSON.stringify(initialBills));
+    }
+
+    // Safety migration for local storage bills to prevent crashes due to schema changes
+    try {
+      let migratedBills = JSON.parse(localStorage.getItem('bills')) || [];
+      let migrated = false;
+      migratedBills = migratedBills.map((b, idx) => {
+        let changed = false;
+        if (!b.items) {
+          b.items = [];
+          changed = true;
+        }
+        b.items = b.items.map(item => {
+          if (item.description && !item.product_name) {
+            item.product_name = item.description;
+            changed = true;
+          }
+          if (!item.product_name) {
+            item.product_name = "Unknown Product";
+            changed = true;
+          }
+          return item;
+        });
+        if (!b.purchase_id || b.purchase_id === 'undefined' || !b.purchase_id.startsWith('PJ')) {
+          const bDate = b.date ? new Date(b.date) : new Date();
+          const year = bDate.getFullYear();
+          const month = String(bDate.getMonth() + 1).padStart(2, '0');
+          const day = String(bDate.getDate()).padStart(2, '0');
+          b.purchase_id = `PJ${year}${month}${day}${String(b.bill_id || (idx + 1)).padStart(4, '0')}`;
+          changed = true;
+        }
+        if (changed) migrated = true;
+        return b;
+      });
+      if (migrated) {
+        localStorage.setItem('bills', JSON.stringify(migratedBills));
+      }
+    } catch (e) {
+      console.error("Migration error:", e);
+    }
+
+    // Date + Time Formatting Helper
+    function formatDemoDateTime(dateStr) {
+      if (!dateStr) return '';
+      try {
+        let cleanStr = dateStr;
+        if (typeof dateStr === 'string') {
+          if (!dateStr.includes('Z') && !dateStr.includes('+') && !/-\d{2}:\d{2}/.test(dateStr)) {
+            cleanStr = dateStr.replace('T', ' ');
+            if (cleanStr.length === 16) {
+              cleanStr += ':00+05:30';
+            } else if (cleanStr.length === 19) {
+              cleanStr += '+05:30';
+            }
+          }
+        }
+        const d = new Date(cleanStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Kolkata',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+        const parts = formatter.formatToParts(d);
+        const partMap = Object.fromEntries(parts.map(p => [p.type, p.value]));
+        const day = partMap.day;
+        const month = partMap.month;
+        const year = partMap.year;
+        const hour = partMap.hour;
+        const minute = partMap.minute;
+        const ampm = partMap.dayPeriod ? partMap.dayPeriod.toUpperCase() : 'AM';
+        return `${day}-${month}-${year} ${hour}:${minute} ${ampm} (IST)`;
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    // ---------------- LOCAL AUDIT LOGS STORAGE ----------------
+    function addLocalAuditLog(action, tableName, recordId, oldValues, newValues) {
+      const logs = JSON.parse(localStorage.getItem('audit_logs')) || [];
+      const newLog = {
+        log_id: logs.length > 0 ? Math.max(...logs.map(l => l.log_id)) + 1 : 1,
+        action: action,
+        table_name: tableName,
+        record_id: recordId,
+        old_values: oldValues ? JSON.stringify(oldValues) : null,
+        new_values: newValues ? JSON.stringify(newValues) : null,
+        user_id: currentSession ? currentSession.user_id : 1,
+        timestamp: new Date().toISOString()
+      };
+      logs.push(newLog);
+      localStorage.setItem('audit_logs', JSON.stringify(logs));
+    }
+
+    // Session States & POS Temp State
+    let currentSession = null;
+    let selectedPOSItems = [];
+    let activeEditBillId = null; // Stored if editing an invoice
+
+    // Prepopulate pre-list combobox in POS
+    const PREDEFINED_ORNAMENTS = [
+      "Necklace", "Bangle", "Ring", "Chain", "Earrings", "Bracelet", 
+      "Pendant", "Coin", "Anklet", "Haram", "Nose Pin", "Bridal Set", 
+      "Mangalsutra", "Kada", "Custom Item"
+    ];
+    document.getElementById('pos-dropdown-select').innerHTML = 
+      '<option value="">-- Select Pre-list --</option>' + 
+      PREDEFINED_ORNAMENTS.map(o => `<option value="${o}">${o}</option>`).join('');
+
+    function populateNavigationMenus() {
+      let menuItems = [
+        { name: 'Dashboard', icon: 'layout-dashboard', view: 'dashboard' },
+        { name: 'POS Invoicing', icon: 'receipt', view: 'billing' },
+        { name: 'Customers CRUD', icon: 'users', view: 'crm' },
+        { name: 'Bill Registry', icon: 'history', view: 'reports' }
+      ];
+      
+      if (currentSession && currentSession.role === 'Admin') {
+        menuItems.push({ name: 'User Management', icon: 'user-cog', view: 'users' });
+        menuItems.push({ name: 'Analytics', icon: 'line-chart', view: 'analytics' });
+      }
+
+      const makeNavHTML = (isMobile) => {
+        return menuItems.map(item => `
+          <button 
+            id="${isMobile ? 'mob-' : 'sib-'}${item.view}" 
+            onclick="navigate('${item.view}')" 
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-150 text-left text-slate-600 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            <i data-lucide="${item.icon}" class="w-4.5 h-4.5"></i>
+            ${item.name}
+          </button>
+        `).join('');
+      };
+
+      document.getElementById('sidebar-nav-container').innerHTML = makeNavHTML(false);
+      document.getElementById('mobile-nav-container').innerHTML = makeNavHTML(true);
+    }
+
+    // ---------------- SYSTEM NAVIGATOR ----------------
+    function navigate(viewName) {
+      if ((viewName === 'analytics' || viewName === 'users') && currentSession && currentSession.role !== 'Admin') {
+        navigate('dashboard');
+        return;
+      }
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-login').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('view-billing').classList.add('hidden');
+      document.getElementById('view-crm').classList.add('hidden');
+      document.getElementById('view-reports').classList.add('hidden');
+      document.getElementById('view-analytics').classList.add('hidden');
+      document.getElementById('view-users').classList.add('hidden');
+
+      const targetView = document.getElementById(`view-${viewName}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      const navButtons = document.querySelectorAll('[id^="sib-"]');
+      navButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+        btn.classList.add('text-slate-600', 'dark:text-slate-350');
+      });
+      const activeBtn = document.getElementById(`sib-${viewName}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-350');
+      }
+
+      document.getElementById('mobile-sidebar-drawer').classList.add('hidden');
+      localStorage.setItem('demo_active_view', viewName);
+
+      const headerLoginBtn = document.getElementById('header-login-btn');
+      if (headerLoginBtn) {
+        if (viewName === 'login' || currentSession) {
+          headerLoginBtn.classList.add('hidden');
+        } else {
+          headerLoginBtn.classList.remove('hidden');
+        }
+      }
+
+      if (viewName === 'dashboard') {
+        loadDashboardStats();
+      } else if (viewName === 'billing') {
+        populatePOSCustomers();
+      } else if (viewName === 'crm') {
+        populateCRMTable();
+      } else if (viewName === 'reports') {
+        populateReportsTable();
+      } else if (viewName === 'analytics') {
+        calculateAnalytics();
+      } else if (viewName === 'users') {
+        populateUsersTable();
+      }
+    }
+
+    // ---------------- LOGINS & SECTIONS ----------------
+    function useDemoAccount(username, password) {
+      document.getElementById('login-username').value = username;
+      document.getElementById('login-password').value = password;
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    // ---------------- INACTIVITY TIMER & LOCKED OUT CONTROLS ----------------
+    let inactivityTimeoutId = null;
+
+    function resetInactivityTimer() {
+      if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
+      if (!currentSession) return;
+      inactivityTimeoutId = setTimeout(() => {
+        handleLogout();
+        alert('Your session has timed out due to 15 minutes of inactivity. Please sign in again.');
+      }, 15 * 60 * 1000); // 15 mins
+    }
+
+    // Bind event listeners for activity tracking
+    ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'].forEach(event => {
+      window.addEventListener(event, resetInactivityTimer);
+    });
+
+    function checkPasswordStrength(pass) {
+      if (pass.length < 8) return 'Password must be at least 8 characters long.';
+      if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter.';
+      if (!/[a-z]/.test(pass)) return 'Password must contain at least one lowercase letter.';
+      if (!/\d/.test(pass)) return 'Password must contain at least one number.';
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(pass)) return 'Password must contain at least one special character.';
+      return null;
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const userVal = document.getElementById('login-username').value;
+      const passVal = document.getElementById('login-password').value;
+      const errorBox = document.getElementById('login-error');
+      const errorSpan = errorBox.querySelector('span');
+
+      errorBox.classList.add('hidden');
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(u => u.username === userVal);
+
+      if (user) {
+        // Lock check
+        if (user.locked_until && new Date(user.locked_until) > new Date()) {
+          const timeLeftSec = Math.round((new Date(user.locked_until) - new Date()) / 1000);
+          const minutesLeft = Math.ceil(timeLeftSec / 60);
+          errorSpan.textContent = `Account is locked due to too many failed attempts. Try again after ${minutesLeft} minutes.`;
+          errorBox.classList.remove('hidden');
+          return;
+        }
+
+        // Active check
+        if (user.is_active === 0 || user.is_active === '0') {
+          errorSpan.textContent = 'Account is disabled. Contact Admin.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+
+        if (user.password_hash === passVal) {
+          // Success
+          user.failed_login_attempts = 0;
+          user.locked_until = null;
+          localStorage.setItem('users', JSON.stringify(users));
+
+          currentSession = {
+            user_id: user.user_id,
+            username: user.username,
+            role: user.role
+          };
+          localStorage.setItem('demo_session', JSON.stringify(currentSession));
+          
+          addLocalAuditLog('LOGIN_SUCCESS', 'users', user.user_id, null, { username: user.username });
+          updateAuthenticationHeader();
+          navigate('dashboard');
+          return;
+        } else {
+          // Increment attempts
+          user.failed_login_attempts = (user.failed_login_attempts || 0) + 1;
+          let reason = 'Incorrect password';
+          
+          if (user.failed_login_attempts >= 5) {
+            user.locked_until = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+            user.failed_login_attempts = 0;
+            reason = 'Account locked (5 failed attempts)';
+            addLocalAuditLog('ACCOUNT_LOCKED', 'users', user.user_id, null, { username: user.username, reason: '5 failed login attempts' });
+            errorSpan.textContent = 'Account locked due to 5 failed attempts. Try again in 15 minutes.';
+          } else {
+            errorSpan.textContent = `Incorrect password. Attempt ${user.failed_login_attempts}/5.`;
+          }
+          addLocalAuditLog('LOGIN_FAILED', 'users', user.user_id, null, { username: user.username, reason: reason });
+          localStorage.setItem('users', JSON.stringify(users));
+          errorBox.classList.remove('hidden');
+          return;
+        }
+      }
+
+      // Not found
+      addLocalAuditLog('LOGIN_FAILED', 'users', 0, null, { attempted_username: userVal, reason: 'User not found' });
+      errorSpan.textContent = 'Incorrect username or password.';
+      errorBox.classList.remove('hidden');
+    }
+
+    function handleLogout() {
+      currentSession = null;
+      localStorage.removeItem('demo_session');
+      localStorage.removeItem('demo_active_view');
+      updateAuthenticationHeader();
+      navigate('home');
+    }
+
+    function updateAuthenticationHeader() {
+      const headerUser = document.getElementById('header-user');
+      const headerLoginBtn = document.getElementById('header-login-btn');
+      const appSidebar = document.getElementById('app-sidebar');
+
+      if (currentSession) {
+        headerUser.classList.remove('hidden');
+        headerLoginBtn.classList.add('hidden');
+        appSidebar.classList.remove('hidden');
+        appSidebar.classList.add('md:flex');
+
+        document.getElementById('user-display-name').textContent = currentSession.username;
+        document.getElementById('user-display-role').textContent = currentSession.role;
+        document.getElementById('user-avatar-char').textContent = currentSession.username[0].toUpperCase();
+
+        // Operator Theme toggles
+        if (currentSession.role === 'Operator') {
+          document.documentElement.classList.add('operator-theme');
+          document.documentElement.classList.remove('dark');
+          const toggleBtn = document.getElementById('theme-toggle-btn');
+          if (toggleBtn) toggleBtn.classList.add('hidden');
+        } else {
+          document.documentElement.classList.remove('operator-theme');
+          const toggleBtn = document.getElementById('theme-toggle-btn');
+          if (toggleBtn) toggleBtn.classList.remove('hidden');
+          if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+
+        const dateInput = document.getElementById('bill-date-input');
+        const autofillBtnWrapper = document.getElementById('bill-date-autofill-btn-wrapper');
+        if (dateInput) {
+          if (currentSession && currentSession.role === 'Operator') {
+            dateInput.disabled = true;
+            dateInput.classList.add('bg-slate-100', 'dark:bg-slate-800', 'opacity-60', 'cursor-not-allowed');
+          } else {
+            dateInput.disabled = false;
+            dateInput.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'opacity-60', 'cursor-not-allowed');
+          }
+        }
+        if (autofillBtnWrapper) {
+          if (currentSession && currentSession.role === 'Operator') {
+            autofillBtnWrapper.classList.add('hidden');
+          } else {
+            autofillBtnWrapper.classList.remove('hidden');
+          }
+        }
+
+        populateNavigationMenus();
+        resetInactivityTimer();
+      } else {
+        if (inactivityTimeoutId) clearTimeout(inactivityTimeoutId);
+        headerUser.classList.add('hidden');
+        
+        const activeView = localStorage.getItem('demo_active_view') || 'home';
+        if (activeView === 'login') {
+          headerLoginBtn.classList.add('hidden');
+        } else {
+          headerLoginBtn.classList.remove('hidden');
+        }
+        
+        appSidebar.classList.add('hidden');
+        appSidebar.classList.remove('md:flex');
+        
+        const dateInput = document.getElementById('bill-date-input');
+        const autofillBtnWrapper = document.getElementById('bill-date-autofill-btn-wrapper');
+        if (dateInput) {
+          dateInput.disabled = false;
+          dateInput.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'opacity-60', 'cursor-not-allowed');
+        }
+        if (autofillBtnWrapper) {
+          autofillBtnWrapper.classList.remove('hidden');
+        }
+        
+        document.documentElement.classList.remove('operator-theme');
+        const toggleBtn = document.getElementById('theme-toggle-btn');
+        if (toggleBtn) toggleBtn.classList.remove('hidden');
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMobileSidebar() {
+      const drawer = document.getElementById('mobile-sidebar-drawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    // ---------------- USER ACCESS MANAGEMENT CRUD ----------------
+    function populateUsersTable() {
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const query = document.getElementById('users-search-query').value.toLowerCase().trim();
+      const tbody = document.getElementById('users-tbody');
+
+      const filtered = users.filter(u => 
+        u.username.toLowerCase().includes(query) || 
+        u.role.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colSpan="6" class="py-8 text-center text-slate-450 italic">No user accounts found.</td></tr>';
+      } else {
+        tbody.innerHTML = filtered.map(u => {
+          const isActive = u.is_active !== 0 && u.is_active !== '0';
+          const statusBadge = isActive 
+            ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-500/10 text-green-700 dark:text-green-400">Enabled</span>`
+            : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-600 dark:text-red-400">Disabled</span>`;
+          
+          const isSelf = currentSession && u.username === currentSession.username;
+          
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-slate-400">#${u.user_id}</td>
+              <td class="py-3.5 px-5 font-bold text-slate-800 dark:text-white">${u.username}</td>
+              <td class="py-3.5 px-5 text-slate-500 dark:text-slate-400">${u.role}</td>
+              <td class="py-3.5 px-5">${statusBadge}</td>
+              <td class="py-3.5 px-5 text-slate-500 dark:text-slate-400 font-mono">${formatDemoDateTime(u.created_date)}</td>
+              <td class="py-3.5 px-5 text-center">
+                <div class="flex justify-center items-center gap-3">
+                  <button onclick="openUserModal(${u.user_id})" class="p-1 text-slate-500 hover:text-blue-600 transition-colors" title="Edit Profile">
+                    <i data-lucide="edit" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="openUserResetModal(${u.user_id})" class="p-1 text-slate-500 hover:text-amber-500 transition-colors" title="Reset Password">
+                    <i data-lucide="key" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="toggleUserStatus(${u.user_id})" class="p-1 text-slate-500 ${isSelf ? 'opacity-30 cursor-not-allowed' : 'hover:text-amber-600'} transition-colors" title="${isActive ? 'Disable User' : 'Enable User'}" ${isSelf ? 'disabled' : ''}>
+                    <i data-lucide="${isActive ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="deleteUser(${u.user_id})" class="p-1 text-slate-500 ${isSelf ? 'opacity-30 cursor-not-allowed' : 'hover:text-red-500'} transition-colors" title="Delete User" ${isSelf ? 'disabled' : ''}>
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function openUserModal(id = null) {
+      const errorBox = document.getElementById('user-modal-error');
+      errorBox.classList.add('hidden');
+      document.getElementById('user-modal-error-text').textContent = '';
+
+      if (id) {
+        document.getElementById('user-modal-title').textContent = 'Edit User Profile';
+        document.getElementById('user-modal-id').value = id;
+        
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const u = users.find(user => user.user_id === id);
+        
+        document.getElementById('user-modal-username').value = u.username;
+        document.getElementById('user-modal-role').value = u.role;
+        
+        document.getElementById('user-modal-pass-container').classList.add('hidden');
+        document.getElementById('user-modal-password').required = false;
+        document.getElementById('user-modal-password').value = '';
+        
+        document.getElementById('user-modal-status-container').classList.remove('hidden');
+        document.getElementById('user-modal-status').value = u.is_active !== undefined ? u.is_active.toString() : '1';
+      } else {
+        document.getElementById('user-modal-title').textContent = 'Register New User';
+        document.getElementById('user-modal-id').value = '';
+        
+        document.getElementById('user-modal-username').value = '';
+        document.getElementById('user-modal-role').value = 'Operator';
+        
+        document.getElementById('user-modal-pass-container').classList.remove('hidden');
+        document.getElementById('user-modal-password').required = true;
+        document.getElementById('user-modal-password').value = '';
+        
+        document.getElementById('user-modal-status-container').classList.add('hidden');
+      }
+      document.getElementById('user-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeUserModal() {
+      document.getElementById('user-modal').classList.add('hidden');
+    }
+
+    function handleUserSubmit(e) {
+      e.preventDefault();
+      
+      const errorBox = document.getElementById('user-modal-error');
+      const errorText = document.getElementById('user-modal-error-text');
+      const statusMsg = document.getElementById('users-status-msg');
+      const statusText = document.getElementById('users-status-msg-text');
+      
+      errorBox.classList.add('hidden');
+      statusMsg.classList.add('hidden');
+      
+      const id = document.getElementById('user-modal-id').value;
+      const username = document.getElementById('user-modal-username').value.trim();
+      const role = document.getElementById('user-modal-role').value;
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      
+      if (id) {
+        const uId = parseInt(id);
+        const uIndex = users.findIndex(user => user.user_id === uId);
+        if (uIndex === -1) {
+          errorText.textContent = 'User not found.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        
+        const existingUser = users[uIndex];
+        const isSelf = currentSession && existingUser.username === currentSession.username;
+        const isActiveVal = parseInt(document.getElementById('user-modal-status').value);
+        
+        if (isSelf && isActiveVal === 0) {
+          errorText.textContent = 'Safety Lock: You cannot disable your own active Admin account!';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        
+        const nameDuplicate = users.some(user => user.username.toLowerCase() === username.toLowerCase() && user.user_id !== uId);
+        if (nameDuplicate) {
+          errorText.textContent = 'Username is already taken by another account.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        
+        const oldVal = { ...existingUser };
+        existingUser.username = username;
+        existingUser.role = role;
+        existingUser.is_active = isActiveVal;
+        
+        localStorage.setItem('users', JSON.stringify(users));
+        addLocalAuditLog('USER_UPDATED', 'users', uId, oldVal, { username, role, is_active: isActiveVal });
+        
+        if (isSelf && role !== 'Admin') {
+          currentSession.role = role;
+          localStorage.setItem('demo_session', JSON.stringify(currentSession));
+          updateAuthenticationHeader();
+          navigate('dashboard');
+        }
+        
+        closeUserModal();
+        statusText.textContent = `User account '${username}' updated successfully.`;
+        statusMsg.classList.remove('hidden');
+        populateUsersTable();
+      } else {
+        const password = document.getElementById('user-modal-password').value;
+        
+        const nameDuplicate = users.some(user => user.username.toLowerCase() === username.toLowerCase());
+        if (nameDuplicate) {
+          errorText.textContent = 'Username is already taken.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        
+        const strengthErr = checkPasswordStrength(password);
+        if (strengthErr) {
+          errorText.textContent = strengthErr;
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        
+        const nextId = users.length > 0 ? Math.max(...users.map(user => user.user_id)) + 1 : 1;
+        const newUser = {
+          user_id: nextId,
+          username: username,
+          password_hash: password,
+          role: role,
+          is_active: 1,
+          created_date: new Date().toISOString()
+        };
+        
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        addLocalAuditLog('USER_CREATED', 'users', nextId, null, { username, role });
+        
+        closeUserModal();
+        statusText.textContent = `User account '${username}' registered successfully.`;
+        statusMsg.classList.remove('hidden');
+        populateUsersTable();
+      }
+    }
+
+    function deleteUser(id) {
+      const errorMsg = document.getElementById('users-error-msg');
+      const errorText = document.getElementById('users-error-msg-text');
+      const statusMsg = document.getElementById('users-status-msg');
+      const statusText = document.getElementById('users-status-msg-text');
+      
+      errorMsg.classList.add('hidden');
+      statusMsg.classList.add('hidden');
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const uIndex = users.findIndex(user => user.user_id === id);
+      if (uIndex === -1) return;
+      
+      const user = users[uIndex];
+      
+      if (currentSession && user.username === currentSession.username) {
+        errorText.textContent = 'Safety Lock: You cannot delete your own active Admin account!';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      
+      if (!confirm(`Are you sure you want to permanently delete user '${user.username}'?`)) {
+        return;
+      }
+      
+      users.splice(uIndex, 1);
+      localStorage.setItem('users', JSON.stringify(users));
+      addLocalAuditLog('USER_DELETED', 'users', id, user, null);
+      
+      statusText.textContent = `User account '${user.username}' deleted successfully.`;
+      statusMsg.classList.remove('hidden');
+      populateUsersTable();
+    }
+
+    function toggleUserStatus(id) {
+      const errorMsg = document.getElementById('users-error-msg');
+      const errorText = document.getElementById('users-error-msg-text');
+      const statusMsg = document.getElementById('users-status-msg');
+      const statusText = document.getElementById('users-status-msg-text');
+      
+      errorMsg.classList.add('hidden');
+      statusMsg.classList.add('hidden');
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const uIndex = users.findIndex(user => user.user_id === id);
+      if (uIndex === -1) return;
+      
+      const user = users[uIndex];
+      
+      if (currentSession && user.username === currentSession.username) {
+        errorText.textContent = 'Safety Lock: You cannot disable your own active Admin account!';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      
+      const currentStatus = user.is_active !== 0 && user.is_active !== '0' ? 1 : 0;
+      const nextStatus = currentStatus === 1 ? 0 : 1;
+      
+      user.is_active = nextStatus;
+      localStorage.setItem('users', JSON.stringify(users));
+      addLocalAuditLog('USER_STATUS_TOGGLED', 'users', id, null, { username: user.username, is_active: nextStatus });
+      
+      statusText.textContent = `User '${user.username}' has been ${nextStatus === 1 ? 'Enabled' : 'Disabled'}.`;
+      statusMsg.classList.remove('hidden');
+      populateUsersTable();
+    }
+
+    function openUserResetModal(id) {
+      const errorBox = document.getElementById('user-reset-modal-error');
+      errorBox.classList.add('hidden');
+      document.getElementById('user-reset-modal-error-text').textContent = '';
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const u = users.find(user => user.user_id === id);
+      if (!u) return;
+      
+      document.getElementById('user-reset-modal-id').value = id;
+      document.getElementById('user-reset-modal-info').textContent = `Resetting password for user account: ${u.username}`;
+      document.getElementById('user-reset-modal-password').value = '';
+      document.getElementById('user-reset-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeUserResetModal() {
+      document.getElementById('user-reset-modal').classList.add('hidden');
+    }
+
+    function handleUserResetSubmit(e) {
+      e.preventDefault();
+      
+      const errorBox = document.getElementById('user-reset-modal-error');
+      const errorText = document.getElementById('user-reset-modal-error-text');
+      const statusMsg = document.getElementById('users-status-msg');
+      const statusText = document.getElementById('users-status-msg-text');
+      
+      errorBox.classList.add('hidden');
+      statusMsg.classList.add('hidden');
+      
+      const id = parseInt(document.getElementById('user-reset-modal-id').value);
+      const newPassword = document.getElementById('user-reset-modal-password').value;
+      
+      const strengthErr = checkPasswordStrength(newPassword);
+      if (strengthErr) {
+        errorText.textContent = strengthErr;
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const uIndex = users.findIndex(user => user.user_id === id);
+      if (uIndex === -1) {
+        errorText.textContent = 'User not found.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      
+      const user = users[uIndex];
+      user.password_hash = newPassword;
+      user.failed_login_attempts = 0;
+      user.locked_until = null;
+      
+      localStorage.setItem('users', JSON.stringify(users));
+      addLocalAuditLog('USER_PASSWORD_RESET', 'users', id, null, { username: user.username });
+      
+      closeUserResetModal();
+      statusText.textContent = `Password for user '${user.username}' has been reset successfully.`;
+      statusMsg.classList.remove('hidden');
+      populateUsersTable();
+    }
+
+    // ---------------- DASHBOARD OPERATIONS ----------------
+    function loadDashboardStats() {
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+      let totalTurnover = 0;
+      bills.forEach(b => totalTurnover += b.total_amount);
+
+      document.getElementById('dash-turnover').textContent = '₹' + totalTurnover.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('dash-bills-count').textContent = bills.length;
+      document.getElementById('dash-cust-count').textContent = customers.length;
+
+      const sortedBills = [...bills].sort((a, b) => b.bill_id - a.bill_id).slice(0, 5);
+      const tbody = document.getElementById('dash-recent-bills-tbody');
+      
+      if (sortedBills.length === 0) {
+        tbody.innerHTML = '<tr><td colSpan="8" class="py-8 text-center text-slate-400 italic">No invoices recorded yet.</td></tr>';
+      } else {
+        tbody.innerHTML = sortedBills.map(b => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">${b.purchase_id}</td>
+            <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-200">${b.customer_name}</td>
+            <td class="py-3 px-4 font-mono text-slate-500">${b.phone_number}</td>
+            <td class="py-3 px-4 text-slate-500">${formatDemoDateTime(b.date)}</td>
+            <td class="py-3 px-4 text-right text-slate-600">₹${b.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3 px-4 text-right text-red-500 font-semibold">-₹${b.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3 px-4 text-right font-extrabold text-slate-800 dark:text-white">₹${b.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex gap-2 justify-center">
+                <button onclick="viewBillDetails(${b.bill_id})" class="text-[10px] uppercase font-bold text-slate-600 border rounded px-2 py-1 bg-white hover:bg-slate-50">
+                  View
+                </button>
+                ${currentSession && currentSession.role === 'Admin' ? `
+                <button onclick="editBillFromRegistry(${b.bill_id})" class="text-[10px] uppercase font-bold text-blue-600 border rounded px-2 py-1 bg-white hover:bg-slate-50">
+                  Edit
+                </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    // ---------------- POS BILLING CONTROLS ----------------
+    function populatePOSCustomers() {
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const select = document.getElementById('bill-customer-id');
+      const saved = select.value;
+      select.innerHTML = '<option value="">-- Choose Customer Profile --</option>' + 
+        customers.map(c => `<option value="${c.customer_id}">${c.customer_name} (${c.phone_number})</option>`).join('');
+      select.value = saved;
+    }
+
+
+
+    function searchCustomerPOS() {
+      const query = document.getElementById('bill-search-query').value.trim().toLowerCase();
+      const statusBox = document.getElementById('bill-search-status');
+      statusBox.classList.add('hidden');
+
+      if (!query) return;
+
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+      // If start with PJ, search bills
+      if (query.startsWith('pj')) {
+        const bills = JSON.parse(localStorage.getItem('bills')) || [];
+        const matchedBill = bills.find(b => b.purchase_id.toLowerCase() === query);
+        if (matchedBill) {
+          const matchedCust = customers.find(c => c.phone_number === matchedBill.phone_number);
+          if (matchedCust) {
+            document.getElementById('bill-customer-id').value = matchedCust.customer_id;
+            handlePOSCustomerChange();
+            statusBox.textContent = `Selected customer ${matchedCust.customer_name} from invoice ${matchedBill.purchase_id}`;
+            statusBox.classList.remove('hidden');
+          } else {
+            statusBox.textContent = `Invoice found for ${matchedBill.customer_name}. Please register customer.`;
+            statusBox.classList.remove('hidden');
+          }
+        } else {
+          statusBox.textContent = 'No invoices found matching that Purchase ID.';
+          statusBox.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const matchedCust = customers.find(c => 
+        c.customer_name.toLowerCase().includes(query) || 
+        c.phone_number.includes(query)
+      );
+
+      if (matchedCust) {
+        document.getElementById('bill-customer-id').value = matchedCust.customer_id;
+        handlePOSCustomerChange();
+        statusBox.textContent = `Customer found: Selected ${matchedCust.customer_name}`;
+        statusBox.classList.remove('hidden');
+      } else {
+        statusBox.textContent = 'No registered customers found matching search criteria.';
+        statusBox.classList.remove('hidden');
+      }
+    }
+
+    function handlePOSDropdownChange(preserveValue = false) {
+      const select = document.getElementById('pos-dropdown-select');
+      const customNameInput = document.getElementById('pos-product-name');
+      const customNameContainer = document.getElementById('pos-product-name-container');
+      const val = select.value;
+
+      if (val === 'Custom Item') {
+        if (customNameContainer) customNameContainer.classList.remove('hidden');
+        if (!preserveValue) customNameInput.value = '';
+      } else {
+        if (customNameContainer) customNameContainer.classList.add('hidden');
+        customNameInput.value = val;
+      }
+    }
+
+    function clearPOSItemForm() {
+      document.getElementById('pos-dropdown-select').value = '';
+      handlePOSDropdownChange();
+      document.getElementById('pos-qty').value = 1;
+      document.getElementById('pos-weight').value = 0;
+      document.getElementById('pos-rate').value = 0;
+      document.getElementById('pos-mrp').value = 0;
+      document.getElementById('pos-making').value = 0;
+      document.getElementById('pos-item-discount').value = 0;
+      document.getElementById('pos-gst').value = 3.0;
+      activePOSItemEditIdx = null;
+      document.getElementById('pos-add-item-btn').textContent = 'Save Record';
+    }
+
+    let activePOSItemEditIdx = null;
+
+    function handleAddPOSItem() {
+      const ornamentType = document.getElementById('pos-dropdown-select').value || '';
+      const name = document.getElementById('pos-product-name').value;
+      const qty = parseInt(document.getElementById('pos-qty').value) || 1;
+      const weight = parseFloat(document.getElementById('pos-weight').value) || 0;
+      const rate = parseFloat(document.getElementById('pos-rate').value) || 0;
+      const mrp = parseFloat(document.getElementById('pos-mrp').value) || 0;
+      const making = parseFloat(document.getElementById('pos-making').value) || 0;
+      const lineDisc = parseFloat(document.getElementById('pos-item-discount').value) || 0;
+      const gst = parseFloat(document.getElementById('pos-gst').value) || 3.0;
+
+      if (!name) {
+        alert('Product name is required.');
+        return;
+      }
+
+      const bullion = weight * rate;
+      const mrpVal = qty * mrp;
+      const baseSub = bullion + mrpVal + making;
+      const discountedSub = Math.max(0, baseSub - lineDisc);
+      const taxVal = discountedSub * (gst / 100);
+      const lineTotal = discountedSub + taxVal;
+
+      const itemObj = {
+        product_name: name,
+        ornament_type: ornamentType || null,
+        quantity: qty,
+        weight_gold_g: weight,
+        rate_per_gram: rate,
+        MRP: mrp,
+        making_charge: making,
+        discount: lineDisc,
+        GST: gst,
+        item_total: lineTotal
+      };
+
+      if (activePOSItemEditIdx !== null) {
+        selectedPOSItems[activePOSItemEditIdx] = itemObj;
+        activePOSItemEditIdx = null;
+        document.getElementById('pos-add-item-btn').textContent = 'Save Record';
+        showToastNotification("Item updated!");
+      } else {
+        selectedPOSItems.push(itemObj);
+        showToastNotification("Item added to invoice!");
+      }
+      
+      // Do not clear the fields; keep the current active item data in form fields as requested
+
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+      savePOSDraftToLocalStorage();
+    }
+
+    function editPOSItem(idx) {
+      const item = selectedPOSItems[idx];
+      if (!item) return;
+      
+      document.getElementById('pos-product-name').value = item.product_name || '';
+      document.getElementById('pos-dropdown-select').value = item.ornament_type || '';
+      handlePOSDropdownChange(true);
+      document.getElementById('pos-qty').value = item.quantity || 1;
+      document.getElementById('pos-weight').value = item.weight_gold_g || 0;
+      document.getElementById('pos-rate').value = item.rate_per_gram || 0;
+      document.getElementById('pos-mrp').value = item.MRP || 0;
+      document.getElementById('pos-making').value = item.making_charge || 0;
+      document.getElementById('pos-item-discount').value = item.discount || 0;
+      document.getElementById('pos-gst').value = item.GST || 3.0;
+
+      activePOSItemEditIdx = idx;
+      document.getElementById('pos-add-item-btn').textContent = 'Update Record';
+      showToastNotification("Item loaded for editing.");
+    }
+
+    function removePOSItem(idx) {
+      selectedPOSItems.splice(idx, 1);
+      if (activePOSItemEditIdx === idx) {
+        activePOSItemEditIdx = null;
+        document.getElementById('pos-add-item-btn').textContent = 'Save Record';
+      } else if (activePOSItemEditIdx > idx) {
+        activePOSItemEditIdx--;
+      }
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+      savePOSDraftToLocalStorage();
+      showToastNotification("Item removed from invoice.");
+    }
+
+    function populatePOSItemsTable() {
+      const tbody = document.getElementById('pos-billing-items-tbody');
+      if (selectedPOSItems.length === 0) {
+        tbody.innerHTML = '<tr><td colSpan="11" class="p-8 text-center text-slate-400 font-sans italic">No items added to invoice.</td></tr>';
+      } else {
+        tbody.innerHTML = selectedPOSItems.map((item, idx) => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/35 transition-colors">
+            <td class="p-3 font-bold text-slate-400">${idx + 1}</td>
+            <td class="p-3 font-sans text-slate-800 dark:text-slate-200">
+              <div class="font-semibold">${item.product_name}</div>
+              ${item.ornament_type ? `<div class="text-[10px] text-slate-400 mt-0.5">${item.ornament_type}</div>` : ""}
+            </td>
+            <td class="p-3 text-center font-bold">${item.quantity}</td>
+            <td class="p-3 text-right">${item.weight_gold_g > 0 ? `${item.weight_gold_g.toFixed(3)}g` : '-'}</td>
+            <td class="p-3 text-right">${item.rate_per_gram > 0 ? `₹${item.rate_per_gram.toLocaleString()}` : '-'}</td>
+            <td class="p-3 text-right">${item.MRP > 0 ? `₹${item.MRP.toLocaleString()}` : '-'}</td>
+            <td class="p-3 text-right">${item.making_charge > 0 ? `₹${item.making_charge.toLocaleString()}` : '-'}</td>
+            <td class="p-3 text-right text-red-500">${item.discount > 0 ? `₹${item.discount.toLocaleString()}` : '-'}</td>
+            <td class="p-3 text-right text-blue-600">${item.GST}%</td>
+            <td class="p-3 text-right font-extrabold text-slate-800 dark:text-white">₹${item.item_total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="editPOSItem(${idx})" class="text-blue-500 hover:text-blue-600 transition-colors p-1" title="Edit Item">
+                  <i data-lucide="edit-2" class="w-4 h-4 mx-auto"></i>
+                </button>
+                <button onclick="removePOSItem(${idx})" class="text-red-500 hover:text-red-600 transition-colors p-1" title="Delete Item">
+                  <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function recalculatePOSSummary() {
+      let subtotal = 0;
+      selectedPOSItems.forEach(item => subtotal += item.item_total);
+      const discount = parseFloat(document.getElementById('pos-calc-discount').value) || 0;
+      const grandtotal = Math.max(0, subtotal - discount);
+
+      document.getElementById('pos-calc-subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('pos-calc-grandtotal').textContent = '₹' + grandtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+      savePOSDraftToLocalStorage();
+    }
+
+    function submitPOSInvoice() {
+      const custId = document.getElementById('bill-customer-id').value;
+      if (!custId) {
+        alert('Please select a customer profile.');
+        return;
+      }
+      if (selectedPOSItems.length === 0) {
+        alert('Please add at least one line item to the invoice.');
+        return;
+      }
+
+      const customers = JSON.parse(localStorage.getItem('customers'));
+      const customer = customers.find(c => c.customer_id === parseInt(custId));
+
+      let subtotal = 0;
+      selectedPOSItems.forEach(item => subtotal += item.item_total);
+      const discount = parseFloat(document.getElementById('pos-calc-discount').value) || 0;
+      const totalAmount = Math.max(0, subtotal - discount);
+
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const billDate = document.getElementById('bill-date-input').value || new Date().toISOString().split('T')[0];
+
+      if (activeEditBillId) {
+        // Edit PUT Flow
+        const idx = bills.findIndex(b => b.bill_id === activeEditBillId);
+        if (idx !== -1) {
+          const oldValues = JSON.parse(JSON.stringify(bills[idx]));
+          bills[idx].customer_name = customer.customer_name;
+          bills[idx].phone_number = customer.phone_number;
+          bills[idx].date = billDate;
+          bills[idx].subtotal = subtotal;
+          bills[idx].discount = discount;
+          bills[idx].total_amount = totalAmount;
+          bills[idx].items = selectedPOSItems.map((item, i) => ({
+            item_id: i + 1,
+            ...item
+          }));
+          
+          const newValues = JSON.parse(JSON.stringify(bills[idx]));
+          addLocalAuditLog("UPDATE_BILL", "bills", activeEditBillId, oldValues, newValues);
+          localStorage.setItem('bills', JSON.stringify(bills));
+          showToastNotification(`Invoice ${bills[idx].purchase_id} updated successfully!`);
+          cancelPOSEditFlow();
+          navigate('reports');
+        }
+        return;
+      }
+
+      // Create flow Purchase ID formatting
+      const dateClean = billDate.replace(/-/g, '');
+      
+      // count daily bills
+      const countToday = bills.filter(b => b.date === billDate).length;
+      const purchaseIdStr = `PJ${dateClean}${strPad(countToday + 1, 4)}`;
+
+      const newBillId = bills.length > 0 ? Math.max(...bills.map(b => b.bill_id)) + 1 : 1;
+
+      const newBill = {
+        bill_id: newBillId,
+        purchase_id: purchaseIdStr,
+        customer_name: customer.customer_name,
+        phone_number: customer.phone_number,
+        company_name: 'Prasanth Jewellery',
+        date: billDate,
+        subtotal: subtotal,
+        discount: discount,
+        total_amount: totalAmount,
+        created_by: currentSession ? currentSession.user_id : 1,
+        items: selectedPOSItems.map((item, idx) => ({
+          item_id: idx + 1,
+          ...item
+        }))
+      };
+
+      bills.push(newBill);
+      localStorage.setItem('bills', JSON.stringify(bills));
+
+      // Clear Form & Draft
+      clearPOSDraft();
+      clearPOSItemForm();
+      selectedPOSItems = [];
+      document.getElementById('pos-calc-discount').value = 0;
+      document.getElementById('bill-customer-id').value = '';
+      document.getElementById('bill-search-query').value = '';
+      document.getElementById('bill-search-status').classList.add('hidden');
+      document.getElementById('cust-prev-purchases-container').classList.add('hidden');
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+      autofillTodayDate();
+
+      // Show success modal
+      document.getElementById('success-bill-serial').textContent = purchaseIdStr;
+      document.getElementById('success-bill-custname').textContent = newBill.customer_name;
+      document.getElementById('success-bill-phone').textContent = newBill.phone_number;
+      document.getElementById('success-bill-total').textContent = '₹' + newBill.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      
+      document.getElementById('bill-success-modal').dataset.billId = newBillId;
+      document.getElementById('bill-success-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // Helper functions for padding
+    function strPad(val, size) {
+      let s = String(val);
+      while (s.length < size) { s = "0" + s; }
+      return s;
+    }
+
+    function editBillFromRegistry(id) {
+      const bills = JSON.parse(localStorage.getItem('bills'));
+      const bill = bills.find(b => b.bill_id === id);
+      if (!bill) return;
+
+      activeEditBillId = id;
+
+      // Populate POS view
+      navigate('billing');
+
+      document.getElementById('billing-title-text').textContent = 'Advanced Bill Editor';
+      document.getElementById('pos-submit-btn').innerHTML = '<i data-lucide="check-circle" class="w-4.5 h-4.5"></i> Update Invoice';
+      document.getElementById('pos-cancel-edit-btn').classList.remove('hidden');
+
+      // Populate customer select
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const matchedCust = customers.find(c => c.phone_number === bill.phone_number);
+      if (matchedCust) {
+        document.getElementById('bill-customer-id').value = matchedCust.customer_id;
+        handlePOSCustomerChange();
+      }
+
+      document.getElementById('bill-date-input').value = bill.date;
+      document.getElementById('pos-calc-discount').value = bill.discount;
+
+      selectedPOSItems = bill.items.map(item => ({
+        product_name: item.product_name,
+        ornament_type: item.ornament_type,
+        quantity: item.quantity,
+        weight_gold_g: item.weight_gold_g,
+        rate_per_gram: item.rate_per_gram,
+        MRP: item.MRP,
+        making_charge: item.making_charge,
+        discount: item.discount || 0,
+        GST: item.GST,
+        item_total: item.item_total
+      }));
+
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+    }
+
+    function cancelPOSEditFlow() {
+      activeEditBillId = null;
+      document.getElementById('billing-title-text').textContent = 'POS Billing Console';
+      document.getElementById('pos-submit-btn').innerHTML = '<i data-lucide="receipt" class="w-4.5 h-4.5"></i> Generate Invoice';
+      document.getElementById('pos-cancel-edit-btn').classList.add('hidden');
+
+      selectedPOSItems = [];
+      document.getElementById('pos-calc-discount').value = 0;
+      document.getElementById('bill-customer-id').value = '';
+      document.getElementById('cust-prev-purchases-container').classList.add('hidden');
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+      autofillTodayDate();
+      clearPOSItemForm();
+    }
+
+    function closeBillSuccessModal() {
+      document.getElementById('bill-success-modal').classList.add('hidden');
+    }
+
+    // ---------------- DATE PICKER HELPER ----------------
+    function autofillTodayDate() {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      const parts = formatter.formatToParts(now);
+      const partMap = Object.fromEntries(parts.map(p => [p.type, p.value]));
+      const today = `${partMap.year}-${partMap.month}-${partMap.day}T${partMap.hour}:${partMap.minute}`;
+      document.getElementById('bill-date-input').value = today;
+      savePOSDraftToLocalStorage();
+    }
+
+    // ---------------- WHATSAPP / PDF EXPORT SIMULATIONS ----------------
+    function downloadPOSPDFFromModal() {
+      const modalId = parseInt(document.getElementById('bill-success-modal').dataset.billId);
+      downloadBillPDF(modalId);
+    }
+
+    function downloadBillPDF(id) {
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const bill = bills.find(b => b.bill_id === id);
+      if (!bill) return;
+
+      // Populate print view area
+      document.getElementById('print-bill-serial').textContent = bill.purchase_id;
+      document.getElementById('print-bill-date').textContent = formatDemoDateTime(bill.date);
+      document.getElementById('print-cust-name').textContent = bill.customer_name;
+      document.getElementById('print-cust-phone').textContent = bill.phone_number;
+      const creatorEl = document.getElementById('print-creator-id');
+      if (creatorEl) {
+        creatorEl.textContent = '#' + bill.created_by;
+      }
+
+      const printItemsTbody = document.getElementById('print-items-tbody');
+      printItemsTbody.innerHTML = bill.items.map(item => `
+        <tr class="border-b border-slate-350">
+                    <td class="p-2 border border-slate-350 font-sans">
+            <div class="font-semibold">${item.product_name}</div>
+            ${item.ornament_type ? `<div class="text-[8px] text-slate-500 mt-0.5">${item.ornament_type}</div>` : ""}
+          </td>
+          <td class="p-2 border border-slate-350 text-center font-bold">${item.quantity}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.weight_gold_g > 0 ? `${item.weight_gold_g.toFixed(3)}g` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.rate_per_gram > 0 ? `₹${item.rate_per_gram.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.MRP > 0 ? `₹${item.MRP.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right text-red-600">${item.discount > 0 ? `₹${item.discount.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.GST}%</td>
+          <td class="p-2 border border-slate-350 text-right font-bold">₹${item.item_total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('print-bill-subtotal').textContent = '₹' + bill.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('print-bill-discount').textContent = '-₹' + bill.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('print-bill-grandtotal').textContent = '₹' + bill.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+      // Run html2pdf export
+      const element = document.getElementById('print-view-area');
+      
+      // Temporarily remove hidden and print-only so html2pdf layout matches correctly
+      element.classList.remove('hidden', 'print-only');
+      
+      const firstName = bill.customer_name ? bill.customer_name.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '') : 'Customer';
+      const opt = {
+        margin:       [10, 10, 10, 10],
+        filename:     `${bill.purchase_id}_${firstName}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.add('hidden', 'print-only');
+        showToastNotification("PDF Invoice Downloaded Successfully!");
+      }).catch(err => {
+        console.error("PDF generation error:", err);
+        element.classList.add('hidden', 'print-only');
+        alert("Failed to download invoice PDF.");
+      });
+    }
+
+    function sharePOSWhatsAppFromModal() {
+      const modalId = document.getElementById('bill-success-modal').dataset.billId;
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const bill = bills.find(b => b.bill_id == modalId);
+      if (!bill) return;
+
+      const text = `Dear ${bill.customer_name}, your Prasanth Jewellery invoice is ready.\nPurchase ID: ${bill.purchase_id}\nTotal amount paid: ₹${bill.total_amount.toLocaleString('en-IN')}.\nThank you for your visit!`;
+      const encoded = encodeURIComponent(text);
+      window.open(`https://api.whatsapp.com/send?phone=${bill.phone_number}&text=${encoded}`, '_blank');
+      showToastNotification("Shared via WhatsApp successfully!");
+    }
+
+    // ---------------- DRAFT STORAGE & PERSISTENCE ----------------
+    function savePOSDraftToLocalStorage() {
+      if (activeEditBillId) return; // Don't save draft while editing
+      const custId = document.getElementById('bill-customer-id').value;
+      const discount = parseFloat(document.getElementById('pos-calc-discount').value) || 0;
+      const date = document.getElementById('bill-date-input').value;
+      const draft = {
+        selectedCustomerId: custId,
+        billingItems: selectedPOSItems,
+        discount: discount,
+        date: date
+      };
+      localStorage.setItem('pos_billing_draft', JSON.stringify(draft));
+    }
+
+    function restorePOSDraftFromLocalStorage() {
+      if (activeEditBillId) return;
+      const draftStr = localStorage.getItem('pos_billing_draft');
+      if (!draftStr) {
+        autofillTodayDate();
+        return;
+      }
+      try {
+        const draft = JSON.parse(draftStr);
+        if (draft.selectedCustomerId) {
+          document.getElementById('bill-customer-id').value = draft.selectedCustomerId;
+          handlePOSCustomerChange();
+        }
+        if (draft.date) {
+          document.getElementById('bill-date-input').value = draft.date;
+        } else {
+          autofillTodayDate();
+        }
+        document.getElementById('pos-calc-discount').value = draft.discount || 0;
+        selectedPOSItems = draft.billingItems || [];
+        populatePOSItemsTable();
+        recalculatePOSSummary();
+      } catch (e) {
+        console.error("Failed to restore POS draft", e);
+        autofillTodayDate();
+      }
+    }
+
+    function clearPOSDraft() {
+      localStorage.removeItem('pos_billing_draft');
+    }
+
+    // ---------------- CUSTOMER CHANGE AND CRM INTEGRATION ----------------
+    function handlePOSCustomerChange() {
+      const custId = document.getElementById('bill-customer-id').value;
+      const prevContainer = document.getElementById('cust-prev-purchases-container');
+      const listContainer = document.getElementById('cust-prev-purchases-list');
+      
+      savePOSDraftToLocalStorage();
+
+      if (!custId) {
+        prevContainer.classList.add('hidden');
+        return;
+      }
+
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const customer = customers.find(c => c.customer_id === parseInt(custId));
+      if (!customer) {
+        prevContainer.classList.add('hidden');
+        return;
+      }
+
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const prevBills = bills.filter(b => b.phone_number === customer.phone_number);
+
+      if (prevBills.length === 0) {
+        listContainer.innerHTML = `<div class="text-slate-400 italic">No previous invoice purchases found for this client.</div>`;
+      } else {
+        listContainer.innerHTML = prevBills.map(b => `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
+            <span>${b.purchase_id} (${formatDemoDateTime(b.date)})</span>
+            <div class="flex gap-1.5">
+              <span class="font-bold text-slate-800 dark:text-slate-200">₹${b.total_amount.toLocaleString('en-IN')}</span>
+              <button type="button" onclick="viewBillDetails(${b.bill_id})" class="text-[9px] text-blue-600 font-bold hover:underline">View</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      prevContainer.classList.remove('hidden');
+    }
+
+    function savePOSDraftRecord() {
+      const custId = document.getElementById('bill-customer-id').value;
+      if (!custId) {
+        alert('Please select a customer profile.');
+        return;
+      }
+      if (selectedPOSItems.length === 0) {
+        alert('Please add at least one line item to the invoice.');
+        return;
+      }
+
+      const customers = JSON.parse(localStorage.getItem('customers'));
+      const customer = customers.find(c => c.customer_id === parseInt(custId));
+
+      let subtotal = 0;
+      selectedPOSItems.forEach(item => subtotal += item.item_total);
+      const discount = parseFloat(document.getElementById('pos-calc-discount').value) || 0;
+      const totalAmount = Math.max(0, subtotal - discount);
+
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const billDate = document.getElementById('bill-date-input').value || new Date().toISOString().split('T')[0];
+
+      if (activeEditBillId) {
+        const idx = bills.findIndex(b => b.bill_id === activeEditBillId);
+        if (idx !== -1) {
+          const oldValues = JSON.parse(JSON.stringify(bills[idx]));
+          bills[idx].customer_name = customer.customer_name;
+          bills[idx].phone_number = customer.phone_number;
+          bills[idx].date = billDate;
+          bills[idx].subtotal = subtotal;
+          bills[idx].discount = discount;
+          bills[idx].total_amount = totalAmount;
+          bills[idx].items = selectedPOSItems.map((item, i) => ({ item_id: i + 1, ...item }));
+          
+          const newValues = JSON.parse(JSON.stringify(bills[idx]));
+          addLocalAuditLog("UPDATE_BILL", "bills", activeEditBillId, oldValues, newValues);
+          localStorage.setItem('bills', JSON.stringify(bills));
+          showToastNotification(`Invoice ${bills[idx].purchase_id} saved successfully!`);
+          cancelPOSEditFlow();
+          navigate('reports');
+        }
+        return;
+      }
+
+      const dateClean = billDate.replace(/-/g, '');
+      const countToday = bills.filter(b => b.date === billDate).length;
+      const purchaseIdStr = `PJ${dateClean}${strPad(countToday + 1, 4)}`;
+
+      const newBillId = bills.length > 0 ? Math.max(...bills.map(b => b.bill_id)) + 1 : 1;
+
+      const newBill = {
+        bill_id: newBillId,
+        purchase_id: purchaseIdStr,
+        customer_name: customer.customer_name,
+        phone_number: customer.phone_number,
+        company_name: 'Prasanth Jewellery',
+        date: billDate,
+        subtotal: subtotal,
+        discount: discount,
+        total_amount: totalAmount,
+        created_by: currentSession ? currentSession.user_id : 1,
+        items: selectedPOSItems.map((item, idx) => ({ item_id: idx + 1, ...item }))
+      };
+
+      bills.push(newBill);
+      localStorage.setItem('bills', JSON.stringify(bills));
+
+      // Reset Draft
+      clearPOSDraft();
+      selectedPOSItems = [];
+      document.getElementById('pos-calc-discount').value = 0;
+      document.getElementById('bill-customer-id').value = '';
+      document.getElementById('bill-search-query').value = '';
+      document.getElementById('bill-search-status').classList.add('hidden');
+      document.getElementById('cust-prev-purchases-container').classList.add('hidden');
+      
+      populatePOSItemsTable();
+      recalculatePOSSummary();
+      autofillTodayDate();
+
+      showToastNotification(`Invoice ${purchaseIdStr} registered & saved successfully!`);
+    }
+
+    function showToastNotification(message) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-5 right-5 bg-blue-900 bg-blue-900 text-white border border-blue-800 text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-pulse no-print";
+      toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-blue-200"></i> <span>${message}</span>`;
+      document.body.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // ---------------- CUSTOMERS CRUD OPERATIONS ----------------
+    function populateCRMTable() {
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const searchName = document.getElementById('crm-search-name').value.toLowerCase().trim();
+      const searchPhone = document.getElementById('crm-search-phone').value.toLowerCase().trim();
+      const searchAddress = document.getElementById('crm-search-address').value.toLowerCase().trim();
+      const tbody = document.getElementById('crm-customers-tbody');
+
+      const filtered = customers.filter(c => {
+        const matchesName = !searchName || c.customer_name.toLowerCase().includes(searchName);
+        const matchesPhone = !searchPhone || c.phone_number.includes(searchPhone);
+        const matchesAddress = !searchAddress || (c.address && c.address.toLowerCase().includes(searchAddress));
+        return matchesName && matchesPhone && matchesAddress;
+      });
+
+      const isAdmin = currentSession && currentSession.role === 'Admin';
+      const thActions = document.getElementById('crm-th-actions');
+      if (thActions) {
+        if (isAdmin) {
+          thActions.classList.remove('hidden');
+        } else {
+          thActions.classList.add('hidden');
+        }
+      }
+
+      if (filtered.length === 0) {
+        const colSpan = isAdmin ? 5 : 4;
+        tbody.innerHTML = `<tr><td colSpan="${colSpan}" class="py-8 text-center text-slate-400 italic">No customer profiles found.</td></tr>`;
+      } else {
+        tbody.innerHTML = filtered.map(c => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+            <td class="py-3.5 px-5 font-mono text-slate-400">#${c.customer_id}</td>
+            <td class="py-3.5 px-5 font-bold text-slate-800 dark:text-white">${c.customer_name}</td>
+            <td class="py-3.5 px-5 font-mono text-slate-700 dark:text-slate-350">${c.phone_number}</td>
+            <td class="py-3.5 px-5 text-slate-500 dark:text-slate-400">${c.address || '<span class="text-slate-300 dark:text-slate-700 italic">No address provided</span>'}</td>
+            ${isAdmin ? `
+            <td class="py-3.5 px-5 text-center">
+              <div class="flex justify-center items-center gap-3">
+                <button onclick="editCustomer(${c.customer_id})" class="p-1 text-slate-500 hover:text-blue-600 transition-colors" title="Edit Profile">
+                  <i data-lucide="edit" class="w-4 h-4"></i>
+                </button>
+                <button onclick="deleteCustomer(${c.customer_id})" class="p-1 text-slate-500 hover:text-red-500 transition-colors" title="Delete Profile">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+            ` : ''}
+          </tr>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function clearCRMFilters() {
+      document.getElementById('crm-search-name').value = '';
+      document.getElementById('crm-search-phone').value = '';
+      document.getElementById('crm-search-address').value = '';
+      populateCRMTable();
+    }
+
+    function openCustModal(id = null) {
+      if (id) {
+        document.getElementById('cust-modal-title').textContent = 'Update Customer Profile';
+        const customers = JSON.parse(localStorage.getItem('customers'));
+        const customer = customers.find(c => c.customer_id === id);
+
+        document.getElementById('cust-edit-id').value = id;
+        document.getElementById('cust-name-input').value = customer.customer_name;
+        document.getElementById('cust-phone-input').value = customer.phone_number;
+        document.getElementById('cust-address-input').value = customer.address || '';
+      } else {
+        document.getElementById('cust-modal-title').textContent = 'Register Customer Record';
+        document.getElementById('cust-edit-id').value = '';
+        document.getElementById('cust-name-input').value = '';
+        document.getElementById('cust-phone-input').value = '';
+        document.getElementById('cust-address-input').value = '';
+      }
+      document.getElementById('cust-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeCustModal() {
+      document.getElementById('cust-modal').classList.add('hidden');
+    }
+
+    function handleCustFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('cust-edit-id').value;
+      const name = document.getElementById('cust-name-input').value;
+      const phone = document.getElementById('cust-phone-input').value;
+      const address = document.getElementById('cust-address-input').value;
+
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const dup = customers.find(c => c.phone_number === phone && c.customer_id !== parseInt(id));
+      if (dup) {
+        alert('Phone number already exists.');
+        return;
+      }
+
+      if (id) {
+        const idx = customers.findIndex(c => c.customer_id === parseInt(id));
+        if (idx !== -1) {
+          const oldValues = { ...customers[idx] };
+          customers[idx].customer_name = name;
+          customers[idx].phone_number = phone;
+          customers[idx].address = address;
+          const newValues = { ...customers[idx] };
+          addLocalAuditLog("UPDATE_CUSTOMER", "customers", parseInt(id), oldValues, newValues);
+        }
+      } else {
+        const newId = customers.length > 0 ? Math.max(...customers.map(c => c.customer_id)) + 1 : 1;
+        customers.push({
+          customer_id: newId,
+          customer_name: name,
+          phone_number: phone,
+          address: address
+        });
+      }
+
+      localStorage.setItem('customers', JSON.stringify(customers));
+      closeCustModal();
+      populateCRMTable();
+      populatePOSCustomers();
+    }
+
+    function editCustomer(id) {
+      openCustModal(id);
+    }
+
+    function deleteCustomer(id) {
+      if (!confirm('Delete customer record?')) return;
+      let customers = JSON.parse(localStorage.getItem('customers')) || [];
+      const customer = customers.find(c => c.customer_id === id);
+      if (customer) {
+        addLocalAuditLog("DELETE_CUSTOMER", "customers", id, customer, null);
+      }
+      customers = customers.filter(c => c.customer_id !== id);
+      localStorage.setItem('customers', JSON.stringify(customers));
+      populateCRMTable();
+      populatePOSCustomers();
+    }
+
+    function deleteBill(id) {
+      if (!confirm('Are you sure you want to delete this invoice?')) return;
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const bill = bills.find(b => b.bill_id === id);
+      if (bill) {
+        addLocalAuditLog("DELETE_BILL", "bills", id, bill, null);
+      }
+      const filtered = bills.filter(b => b.bill_id !== id);
+      localStorage.setItem('bills', JSON.stringify(filtered));
+      populateReportsTable();
+      showToastNotification("Invoice deleted successfully.");
+    }
+
+    function clearReportsFilters() {
+      document.getElementById('report-filter-serial').value = '';
+      document.getElementById('report-filter-phone').value = '';
+      document.getElementById('report-filter-name').value = '';
+      document.getElementById('report-filter-product').value = '';
+      document.getElementById('report-filter-from-date').value = '';
+      document.getElementById('report-filter-to-date').value = '';
+      populateReportsTable();
+    }
+
+    function exportReportsToExcel() {
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const fSerial = document.getElementById('report-filter-serial').value.toLowerCase().trim();
+      const fPhone = document.getElementById('report-filter-phone').value.toLowerCase().trim();
+      const fName = document.getElementById('report-filter-name').value.toLowerCase().trim();
+      const fProduct = document.getElementById('report-filter-product').value.toLowerCase().trim();
+      const fFrom = document.getElementById('report-filter-from-date').value;
+      const fTo = document.getElementById('report-filter-to-date').value;
+
+      const filtered = bills.filter(b => {
+        if (fSerial && !b.purchase_id.toLowerCase().includes(fSerial)) return false;
+        if (fPhone && !b.phone_number.includes(fPhone)) return false;
+        if (fName && !b.customer_name.toLowerCase().includes(fName)) return false;
+        if (fProduct && !b.items.some(item => item.product_name.toLowerCase().includes(fProduct))) return false;
+        const billDateOnly = b.date.split('T')[0];
+        if (fFrom && billDateOnly < fFrom) return false;
+        if (fTo && billDateOnly > fTo) return false;
+        return true;
+      });
+
+      const excelData = [];
+      excelData.push([
+        "Purchase ID", "Customer Name", "Date", "Product Name", "Ornament Type",
+        "Quantity", "Amount", "GST", "Total Sales"
+      ]);
+
+      filtered.forEach(b => {
+        b.items.forEach(item => {
+          const bullion = (item.weight_gold_g || 0) * (item.rate_per_gram || 0);
+          const mrpVal = (item.quantity || 1) * (item.MRP || 0);
+          const baseSub = bullion + mrpVal + (item.making_charge || 0);
+          const amt = Math.max(0, baseSub - (item.discount || 0));
+          const gstAmt = amt * ((item.GST || 3.0) / 100);
+          const total = amt + gstAmt;
+
+          excelData.push([
+            b.purchase_id,
+            b.customer_name,
+            formatDemoDateTime(b.date),
+            item.product_name,
+            item.ornament_type || '',
+            item.quantity || 1,
+            amt,
+            gstAmt,
+            total
+          ]);
+        });
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Registry Report");
+      
+      const max_widths = [];
+      excelData.forEach(row => {
+        row.forEach((val, i) => {
+          const len = val ? String(val).length : 5;
+          max_widths[i] = Math.max(max_widths[i] || 0, len + 3);
+        });
+      });
+      worksheet['!cols'] = max_widths.map(w => ({ wch: w }));
+
+      XLSX.writeFile(workbook, "Prasanth_Jewellery_Sales_Report.xlsx");
+      showToastNotification("Excel report exported successfully!");
+    }
+
+    // ---------------- TRANSACTION REGISTRY (REPORTS) OPERATIONS ----------------
+    function populateReportsTable() {
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const fSerial = document.getElementById('report-filter-serial').value.toLowerCase();
+      const fPhone = document.getElementById('report-filter-phone').value.toLowerCase();
+      const fName = document.getElementById('report-filter-name').value.toLowerCase();
+
+      const fProduct = document.getElementById('report-filter-product').value.toLowerCase().trim();
+      const fFrom = document.getElementById('report-filter-from-date').value;
+      const fTo = document.getElementById('report-filter-to-date').value;
+
+      const filtered = bills.filter(b => {
+        if (fSerial && !b.purchase_id.toLowerCase().includes(fSerial)) return false;
+        if (fPhone && !b.phone_number.includes(fPhone)) return false;
+        if (fName && !b.customer_name.toLowerCase().includes(fName)) return false;
+        if (fProduct && !b.items.some(item => item.product_name.toLowerCase().includes(fProduct))) return false;
+        const billDateOnly = (b.date && typeof b.date === 'string') ? b.date.split('T')[0] : '';
+        if (fFrom && billDateOnly < fFrom) return false;
+        if (fTo && billDateOnly > fTo) return false;
+        return true;
+      });
+
+      const tbody = document.getElementById('reports-bills-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colSpan="8" class="py-8 text-center text-slate-400 italic">No transactions found.</td></tr>';
+      } else {
+        tbody.innerHTML = filtered.map(b => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
+            <td class="py-3.5 px-5 font-mono font-bold text-blue-600 dark:text-blue-400">${b.purchase_id}</td>
+            <td class="py-3.5 px-5 font-bold text-slate-800 dark:text-white">${b.customer_name}</td>
+            <td class="py-3.5 px-5 font-mono text-slate-500">${b.phone_number}</td>
+            <td class="py-3.5 px-5 text-slate-500">${formatDemoDateTime(b.date)}</td>
+            <td class="py-3.5 px-5 text-right font-mono text-slate-600">₹${b.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3.5 px-5 text-right font-semibold text-red-500 font-mono">-₹${b.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3.5 px-5 text-right font-extrabold text-slate-800 dark:text-white font-mono">₹${b.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            <td class="py-3.5 px-5 text-center">
+              <div class="flex justify-center items-center gap-2">
+                <button onclick="viewBillDetails(${b.bill_id})" class="text-[10px] uppercase font-bold text-slate-600 hover:text-blue-600 border rounded px-2.5 py-1 bg-white hover:bg-slate-50">
+                  Details
+                </button>
+                ${currentSession && currentSession.role === 'Admin' ? `
+                  <button onclick="editBillFromRegistry(${b.bill_id})" class="text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 border rounded px-2.5 py-1 bg-white hover:bg-slate-50">
+                    Edit
+                  </button>
+                  <button onclick="deleteBill(${b.bill_id})" class="text-[10px] uppercase font-bold text-red-600 hover:text-red-700 border rounded px-2.5 py-1 bg-red-50/50">
+                    Delete
+                  </button>
+                ` : ''}
+                <button onclick="printBill(${b.bill_id})" class="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-blue-600 hover:text-blue-700 border rounded px-2.5 py-1 bg-blue-50/50">
+                  <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
+                </button>
+                <button onclick="downloadBillPDF(${b.bill_id})" class="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-indigo-600 hover:text-indigo-700 border rounded px-2.5 py-1 bg-indigo-50/50 font-sans">
+                  <i data-lucide="file-down" class="w-3.5 h-3.5"></i> PDF
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    // ---------------- DETAIL DRAWER AND PRINT OPERATIONS ----------------
+    function viewBillDetails(id) {
+      const bills = JSON.parse(localStorage.getItem('bills'));
+      const bill = bills.find(b => b.bill_id === id);
+
+      document.getElementById('detail-bill-serial').textContent = bill.purchase_id;
+      document.getElementById('detail-bill-company').textContent = 'Billed By: ' + bill.company_name;
+      document.getElementById('detail-bill-custname').textContent = bill.customer_name;
+      document.getElementById('detail-bill-phone').textContent = bill.phone_number;
+      document.getElementById('detail-bill-date').textContent = formatDemoDateTime(bill.date);
+      document.getElementById('detail-bill-creator').textContent = '#' + bill.created_by;
+
+      const itemsTbody = document.getElementById('detail-bill-items-tbody');
+      itemsTbody.innerHTML = bill.items.map(item => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 font-mono text-[11px]">
+                    <td class="p-3 font-sans text-slate-700 dark:text-slate-350">
+            <div class="font-semibold">${item.product_name}</div>
+            ${item.ornament_type ? `<div class="text-[10px] text-slate-400 mt-0.5">${item.ornament_type}</div>` : ""}
+          </td>
+          <td class="p-3 text-center font-bold">${item.quantity}</td>
+          <td class="p-3 text-right">${item.weight_gold_g > 0 ? `${item.weight_gold_g.toFixed(3)}g` : '-'}</td>
+          <td class="p-3 text-right">${item.rate_per_gram > 0 ? `₹${item.rate_per_gram.toLocaleString()}` : '-'}</td>
+          <td class="p-3 text-right">${item.MRP > 0 ? `₹${item.MRP.toLocaleString()}` : '-'}</td>
+          <td class="p-3 text-right text-red-500">${item.discount > 0 ? `₹${item.discount.toLocaleString()}` : '-'}</td>
+          <td class="p-3 text-right text-blue-600">${item.GST}%</td>
+          <td class="p-3 text-right font-bold text-slate-800 dark:text-white">₹${item.item_total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('detail-bill-subtotal').textContent = '₹' + bill.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('detail-bill-discount').textContent = '-₹' + bill.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('detail-bill-grandtotal').textContent = '₹' + bill.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+      document.getElementById('bill-detail-modal').dataset.billId = id;
+      
+      const editBtn = document.getElementById('modal-edit-bill-btn');
+      if (editBtn) {
+        if (currentSession && currentSession.role === 'Admin') {
+          editBtn.classList.remove('hidden');
+        } else {
+          editBtn.classList.add('hidden');
+        }
+      }
+      
+      document.getElementById('bill-detail-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function editBillFromModal() {
+      const billId = parseInt(document.getElementById('bill-detail-modal').dataset.billId);
+      closeBillDetailModal();
+      editBillFromRegistry(billId);
+    }
+
+    function closeBillDetailModal() {
+      document.getElementById('bill-detail-modal').classList.add('hidden');
+    }
+
+    // Print setup
+    function printBill(id) {
+      const bills = JSON.parse(localStorage.getItem('bills'));
+      const bill = bills.find(b => b.bill_id === id);
+
+      document.getElementById('print-bill-serial').textContent = bill.purchase_id;
+      document.getElementById('print-bill-date').textContent = formatDemoDateTime(bill.date);
+      document.getElementById('print-cust-name').textContent = bill.customer_name;
+      document.getElementById('print-cust-phone').textContent = bill.phone_number;
+      const creatorEl = document.getElementById('print-creator-id');
+      if (creatorEl) {
+        creatorEl.textContent = '#' + bill.created_by;
+      }
+
+      const printItemsTbody = document.getElementById('print-items-tbody');
+      printItemsTbody.innerHTML = bill.items.map(item => `
+        <tr class="border-b border-slate-350">
+                    <td class="p-2 border border-slate-350 font-sans">
+            <div class="font-semibold">${item.product_name}</div>
+            ${item.ornament_type ? `<div class="text-[8px] text-slate-500 mt-0.5">${item.ornament_type}</div>` : ""}
+          </td>
+          <td class="p-2 border border-slate-350 text-center font-bold">${item.quantity}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.weight_gold_g > 0 ? `${item.weight_gold_g.toFixed(3)}g` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.rate_per_gram > 0 ? `₹${item.rate_per_gram.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.MRP > 0 ? `₹${item.MRP.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right text-red-600">${item.discount > 0 ? `₹${item.discount.toLocaleString()}` : '-'}</td>
+          <td class="p-2 border border-slate-350 text-right">${item.GST}%</td>
+          <td class="p-2 border border-slate-350 text-right font-bold">₹${item.item_total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('print-bill-subtotal').textContent = '₹' + bill.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('print-bill-discount').textContent = '-₹' + bill.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('print-bill-grandtotal').textContent = '₹' + bill.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+      window.print();
+    }
+
+    function printBillFromModal() {
+      const id = parseInt(document.getElementById('bill-success-modal').dataset.billId);
+      closeBillSuccessModal();
+      printBill(id);
+    }
+
+    function printBillDetails() {
+      const id = parseInt(document.getElementById('bill-detail-modal').dataset.billId);
+      closeBillDetailModal();
+      printBill(id);
+    }
+
+    // ---------------- LIGHT/DARK MODE TOGGLE ----------------
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const sun = document.getElementById('dark-icon-sun');
+      const moon = document.getElementById('dark-icon-moon');
+
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      }
+    }
+
+    // ---------------- ANALYTICS CALCULATIONS ----------------
+    function clearAnalyticsFilters() {
+      document.getElementById('analytics-filter-from').value = '';
+      document.getElementById('analytics-filter-to').value = '';
+      document.getElementById('analytics-filter-serial').value = '';
+      document.getElementById('analytics-filter-name').value = '';
+      calculateAnalytics();
+    }
+
+    function calculateAnalytics() {
+      const bills = JSON.parse(localStorage.getItem('bills')) || [];
+      const customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+      const fFrom = document.getElementById('analytics-filter-from').value;
+      const fTo = document.getElementById('analytics-filter-to').value;
+      const fSerial = document.getElementById('analytics-filter-serial').value.toLowerCase().trim();
+      const fName = document.getElementById('analytics-filter-name').value.toLowerCase().trim();
+
+      const filtered = bills.filter(b => {
+        if (fFrom && b.date < fFrom) return false;
+        if (fTo && b.date > fTo) return false;
+        if (fSerial && !b.purchase_id.toLowerCase().includes(fSerial)) return false;
+        if (fName && !b.customer_name.toLowerCase().includes(fName)) return false;
+        return true;
+      });
+
+      // KPI Aggregations
+      let totalSales = 0;
+      const uniquePhones = new Set();
+      filtered.forEach(b => {
+        totalSales += b.total_amount;
+        uniquePhones.add(b.phone_number);
+      });
+
+      const billsCount = filtered.length;
+      const custCount = uniquePhones.size;
+      const avgValue = billsCount > 0 ? (totalSales / billsCount) : 0;
+
+      document.getElementById('analytics-kpi-sales').textContent = '₹' + totalSales.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      document.getElementById('analytics-kpi-bills').textContent = billsCount;
+      document.getElementById('analytics-kpi-customers').textContent = custCount;
+      document.getElementById('analytics-kpi-avg').textContent = '₹' + avgValue.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+      // Sales by Date Breakdown
+      const salesByDate = {};
+      filtered.forEach(b => {
+        const dateKey = (b.date && typeof b.date === 'string') ? b.date.split('T')[0] : (b.date || '').substring(0, 10);
+        salesByDate[dateKey] = (salesByDate[dateKey] || 0) + b.total_amount;
+      });
+      const dateTable = document.getElementById('analytics-table-date');
+      const datesSorted = Object.keys(salesByDate).sort((a,b) => b.localeCompare(a));
+      if (datesSorted.length === 0) {
+        dateTable.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">No sales.</td></tr>`;
+      } else {
+        dateTable.innerHTML = datesSorted.map(d => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30">
+            <td class="p-2.5 px-4 font-mono font-bold">${d}</td>
+            <td class="p-2.5 px-4 text-right">${filtered.filter(b=> ((b.date && typeof b.date === 'string') ? b.date.split('T')[0] : (b.date || '').substring(0, 10)) === d).length}</td>
+            <td class="p-2.5 px-4 text-right font-bold text-slate-800 dark:text-slate-200">₹${salesByDate[d].toLocaleString('en-IN')}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Sales by Customer Breakdown
+      const salesByCust = {};
+      const billsByCust = {};
+      filtered.forEach(b => {
+        salesByCust[b.customer_name] = (salesByCust[b.customer_name] || 0) + b.total_amount;
+        billsByCust[b.customer_name] = (billsByCust[b.customer_name] || 0) + 1;
+      });
+      const custTable = document.getElementById('analytics-table-customer');
+      const custsSorted = Object.keys(salesByCust).sort((a,b) => salesByCust[b] - salesByCust[a]);
+      if (custsSorted.length === 0) {
+        custTable.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">No sales.</td></tr>`;
+      } else {
+        custTable.innerHTML = custsSorted.map(c => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30">
+            <td class="p-2.5 px-4 font-bold">${c}</td>
+            <td class="p-2.5 px-4 text-right">${billsByCust[c]}</td>
+            <td class="p-2.5 px-4 text-right font-bold text-slate-800 dark:text-slate-200">₹${salesByCust[c].toLocaleString('en-IN')}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Sales by Product Breakdown
+      const qtyByProd = {};
+      const revenueByProd = {};
+      filtered.forEach(b => {
+        b.items.forEach(item => {
+          qtyByProd[item.product_name] = (qtyByProd[item.product_name] || 0) + item.quantity;
+          revenueByProd[item.product_name] = (revenueByProd[item.product_name] || 0) + item.item_total;
+        });
+      });
+      const prodTable = document.getElementById('analytics-table-product');
+      const prodsSorted = Object.keys(qtyByProd).sort((a,b) => qtyByProd[b] - qtyByProd[a]);
+      if (prodsSorted.length === 0) {
+        prodTable.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">No sales.</td></tr>`;
+      } else {
+        prodTable.innerHTML = prodsSorted.map(p => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30">
+            <td class="p-2.5 px-4 font-bold text-slate-700 dark:text-slate-200">${p}</td>
+            <td class="p-2.5 px-4 text-center font-semibold text-blue-600">${qtyByProd[p]}</td>
+            <td class="p-2.5 px-4 text-right font-extrabold text-slate-800 dark:text-200 font-mono">₹${revenueByProd[p].toLocaleString('en-IN')}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Top Ornaments Progress List
+      const topOrnamentsList = document.getElementById('analytics-top-ornaments-list');
+      if (prodsSorted.length === 0) {
+        topOrnamentsList.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No item analytics computed.</p>`;
+      } else {
+        const maxQty = Math.max(...Object.values(qtyByProd));
+        topOrnamentsList.innerHTML = prodsSorted.slice(0, 4).map(p => {
+          const qty = qtyByProd[p];
+          const pct = maxQty > 0 ? (qty / maxQty * 100) : 0;
+          return `
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-semibold">
+                <span class="text-slate-700 dark:text-slate-350">${p}</span>
+                <span class="font-bold text-slate-900 dark:text-white font-mono">${qty} sold</span>
+              </div>
+              <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Visual Chart Trend Rendering (using customized animated CSS columns)
+      const trendChart = document.getElementById('analytics-trend-chart');
+      if (datesSorted.length === 0) {
+        trendChart.innerHTML = `<div class="absolute inset-0 flex items-center justify-center text-slate-400 italic">No sales recordings to map trends.</div>`;
+      } else {
+        const last7Dates = [...datesSorted].reverse().slice(-7);
+        const maxSales = Math.max(...last7Dates.map(d => salesByDate[d]));
+        trendChart.innerHTML = last7Dates.map(d => {
+          const sales = salesByDate[d];
+          const heightPct = maxSales > 0 ? (sales / maxSales * 75) : 0;
+          const displayDate = d.slice(5); // MM-DD
+          return `
+            <div class="flex flex-col items-center justify-end h-full w-10 gap-2 group relative">
+              <div class="absolute -top-6 bg-slate-800 text-white text-[9px] rounded py-0.5 px-1.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow font-bold z-10 font-mono">
+                ₹${sales.toLocaleString()}
+              </div>
+              <div class="w-5 bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 shadow-xs" style="height: ${heightPct}%"></div>
+              <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">${displayDate}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // Initialize systems
+    (function init() {
+      const savedTheme = localStorage.getItem('theme');
+      const sun = document.getElementById('dark-icon-sun');
+      const moon = document.getElementById('dark-icon-moon');
+
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      }
+      
+      updateAuthenticationHeader();
+      
+      const activeView = localStorage.getItem('demo_active_view') || 'home';
+      if (currentSession && activeView !== 'home') {
+        navigate(activeView);
+      } else {
+        navigate('home');
+      }
+
+      restorePOSDraftFromLocalStorage();
+      lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>

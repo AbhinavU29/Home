@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-blue-500/50 rounded-full hover:bg-blue-600;
+}
+
+/* Premium Classes */
+.blue-glow {
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+}
+
+.blue-glow-hover {
+  @apply transition-all duration-300;
+}
+.blue-glow-hover:hover {
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.25);
+  @apply transform -translate-y-0.5;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Animated Golden Shine Effect */
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 55%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+}
+.shine-effect:hover::after {
+  transform: translate(50%, 50%) rotate(45deg);
+}
+
+/* Ticker Animation */
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 25s linear infinite;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Print Invoice Utility classes */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  }
+  
+  header, aside, nav, button, .no-print {
+    display: none !important;
+  }
+  
+  /* Reset container layouts to avoid centering the print block on the A4 page */
+  body, #root, #root > div, main, .grid, .grid > div, .fixed, .relative {
+    display: block !important;
+    position: static !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    visibility: hidden;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Make the targeted invoice sheet visible */
+  .print-area, .print-area * {
+    visibility: visible !important;
+  }
+
+  .print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Force visible borders in print */
+  .print-area table, .print-area th, .print-area td {
+    border: 1px solid #CBD5E1 !important;
+    border-collapse: collapse !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0.4in;
+  }
+}
+
+/* Operator/Cashier Theme Overrides (Crimson & Pink Palette) */
+html.operator-theme,
+.operator-theme body,
+.operator-theme #root,
+.operator-theme main,
+.operator-theme aside {
+  background-color: #FFFFFF !important;
+  color: #A50034 !important;
+}
+
+/* Primary Color Overrides (#A50034) for Headers, Buttons, etc. */
+.operator-theme header {
+  background-color: #A50034 !important;
+}
+
+.operator-theme .bg-blue-600,
+.operator-theme .bg-blue-800,
+.operator-theme .bg-blue-850,
+.operator-theme .bg-blue-900,
+.operator-theme .bg-blue-950,
+.operator-theme [class*="bg-blue-"],
+.operator-theme [class*="bg-indigo-"] {
+  background-color: #A50034 !important;
+  color: #FFFFFF !important;
+}
+
+.operator-theme .hover\:bg-blue-700:hover,
+.operator-theme .hover\:bg-blue-850:hover,
+.operator-theme .hover\:bg-blue-900:hover,
+.operator-theme .hover\:bg-indigo-700:hover,
+.operator-theme [class*="hover:bg-blue-"]:hover,
+.operator-theme [class*="hover:bg-indigo-"]:hover {
+  background-color: #8D002C !important; /* Darker Crimson hover */
+  color: #FFFFFF !important;
+}
+
+.operator-theme .text-blue-600,
+.operator-theme .text-blue-900,
+.operator-theme .text-blue-200,
+.operator-theme .text-blue-100,
+.operator-theme .dark\:text-blue-400,
+.operator-theme [class*="text-blue-"],
+.operator-theme [class*="text-indigo-"] {
+  color: #A50034 !important;
+}
+
+/* Border overrides (#F7C6C7) */
+.operator-theme .border-slate-150,
+.operator-theme .border-slate-200,
+.operator-theme .border-slate-250,
+.operator-theme .border-slate-300,
+.operator-theme .border-slate-800,
+.operator-theme .border-slate-850,
+.operator-theme .border-blue-700,
+.operator-theme .border-blue-800,
+.operator-theme [class*="border-slate-"],
+.operator-theme [class*="border-blue-"] {
+  border-color: #F7C6C7 !important;
+}
+
+.operator-theme .focus\:border-blue-500:focus,
+.operator-theme [class*="focus:border-blue-"]:focus {
+  border-color: #A50034 !important; /* Crimson focus */
+  border-width: 1.5px !important;
+}
+
+/* Soft highlight overrides (Pink #F7C6C7 with low opacity, or light colors) */
+.operator-theme .bg-blue-50,
+.operator-theme .bg-blue-100,
+.operator-theme .bg-slate-50,
+.operator-theme .bg-slate-100,
+.operator-theme .bg-slate-50\/50,
+.operator-theme .hover\:bg-slate-100:hover,
+.operator-theme .dark\:hover\:bg-slate-900:hover {
+  background-color: rgba(247, 198, 199, 0.25) !important;
+  color: #A50034 !important;
+}
+
+/* Active navigation item background / text */
+.operator-theme .bg-blue-600.text-white {
+  background-color: #A50034 !important;
+  color: #FFFFFF !important;
+}
+
+/* Accent items / Red text mapping */
+.operator-theme .text-red-500,
+.operator-theme .text-red-650 {
+  color: #A50034 !important;
+}
+
+.operator-theme .bg-red-500,
+.operator-theme .bg-red-600 {
+  background-color: #A50034 !important;
+  color: #FFFFFF !important;
+}
+
+/* Force child elements of headers or highlighted items to retain readable white text */
+.operator-theme header *,
+.operator-theme .bg-blue-600 *,
+.operator-theme .bg-blue-850 *,
+.operator-theme .bg-blue-900 * {
+  color: #FFFFFF !important;
+}
+
+/* Force light mode style */
+.operator-theme {
+  color-scheme: light !important;
+}

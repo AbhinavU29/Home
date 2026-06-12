@@ -441,14 +441,8 @@ export default function Reports() {
                   {/* Header info */}
                   <div className="flex justify-between items-start border-b-2 border-blue-900 pb-3">
                     <div className="flex gap-3 items-center">
-                      {/* Clean Vector Diamond Logo matching ReportLab PDF exactly */}
-                      <div className="w-10 h-10 flex items-center justify-center">
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <polygon points="20,2 38,18 38,22 20,38 2,22 2,18" fill="#1A365D" stroke="#1A365D" />
-                          <polygon points="20,2 20,38 2,22" fill="#3B82F6" stroke="#3B82F6" />
-                          <line x1="20" y1="2" x2="20" y2="38" stroke="white" strokeWidth="0.8" />
-                        </svg>
-                      </div>
+                      {/* Logo image matching ReportLab PDF exactly */}
+                      <img src="/pj_logo.png" alt="PJ Logo" className="w-10 h-10 object-contain rounded-lg border border-slate-100" />
                       <div>
                         <h3 className="font-sans text-md font-bold text-blue-950 tracking-wider">PRASANTH JEWELLERY</h3>
                         <p className="text-[9px] text-slate-500 leading-normal">

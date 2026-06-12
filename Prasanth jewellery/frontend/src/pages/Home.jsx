@@ -8,7 +8,7 @@ export default function Home() {
       {/* Navbar */}
       <nav className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 sticky top-0 z-50 px-6 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
-          <Gem className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-pulse" />
+          <img src="/pj_logo.png" alt="PJ Logo" className="w-8 h-8 object-contain rounded-lg border border-slate-200 dark:border-slate-800" />
           <span className="font-serif text-xl font-bold tracking-widest text-blue-900 dark:text-white">
             PRASANTH JEWELLERY
           </span>

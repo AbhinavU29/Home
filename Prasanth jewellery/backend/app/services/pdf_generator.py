@@ -1,6 +1,7 @@
 import io
+import os
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.graphics.shapes import Drawing, Polygon, Line
@@ -88,16 +89,21 @@ def generate_bill_pdf(bill: Bill) -> bytes:
 
     story = []
     
-    # 1. Shop Header with Vector Logo
-    # Draw vector gem logo
-    logo_draw = Drawing(40, 40)
-    # Diamond outer shape
-    logo_draw.add(Polygon([20, 2, 38, 18, 38, 22, 20, 38, 2, 22, 2, 18], 
-                          fillColor=blue_primary, strokeColor=blue_primary))
-    # Diamond internal facets (light blue accents)
-    logo_draw.add(Polygon([20, 2, 20, 38, 2, 22], 
-                          fillColor=colors.HexColor("#3B82F6"), strokeColor=colors.HexColor("#3B82F6")))
-    logo_draw.add(Line(20, 2, 20, 38, strokeColor=colors.white, strokeWidth=0.8))
+    # 1. Shop Header with Image Logo (with Vector Fallback)
+    logo_path = os.path.join(os.path.dirname(__file__), 'pj_logo.png')
+    if os.path.exists(logo_path):
+        logo_element = Image(logo_path, width=40, height=40)
+    else:
+        # Fallback to vector drawing
+        logo_draw = Drawing(40, 40)
+        # Diamond outer shape
+        logo_draw.add(Polygon([20, 2, 38, 18, 38, 22, 20, 38, 2, 22, 2, 18], 
+                              fillColor=blue_primary, strokeColor=blue_primary))
+        # Diamond internal facets (light blue accents)
+        logo_draw.add(Polygon([20, 2, 20, 38, 2, 22], 
+                              fillColor=colors.HexColor("#3B82F6"), strokeColor=colors.HexColor("#3B82F6")))
+        logo_draw.add(Line(20, 2, 20, 38, strokeColor=colors.white, strokeWidth=0.8))
+        logo_element = logo_draw
     
     company_details = f"""
     <font size="14"><b>PRASANTH JEWELLERY</b></font><br/>
@@ -113,7 +119,7 @@ def generate_bill_pdf(bill: Bill) -> bytes:
     """
     
     header_table_data = [
-        [logo_draw, Paragraph(company_details, body_normal), Paragraph(invoice_details, body_normal)]
+        [logo_element, Paragraph(company_details, body_normal), Paragraph(invoice_details, body_normal)]
     ]
     # Total A4 printable width is ~523 pt.
     header_table = Table(header_table_data, colWidths=[50, 230, 243])

@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
 from app.core.security import get_password_hash
 from app.models.models import User, Customer, Bill, BillItem, Product
-from app.api import auth, customers, bills, reports, products, import_data
+from app.api import auth, customers, bills, reports, products, import_data, metal_rates
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
@@ -32,6 +32,7 @@ app.include_router(bills.router, prefix=settings.API_V1_STR)
 app.include_router(reports.router, prefix=settings.API_V1_STR)
 app.include_router(products.router, prefix=settings.API_V1_STR)
 app.include_router(import_data.router, prefix=settings.API_V1_STR)
+app.include_router(metal_rates.router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 def seed_database():

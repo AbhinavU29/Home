@@ -141,3 +141,23 @@ class DashboardKPI(BaseModel):
     bills_count: int
     customers_count: int
     recent_bills: List[BillResponse]
+
+class MetalRateCreate(BaseModel):
+    gold_24k: float
+    gold_22k: float
+    gold_18k: float
+    silver: float
+    platinum: float
+
+class MetalRateResponse(BaseModel):
+    rate_id: int
+    gold_24k: float
+    gold_22k: float
+    gold_18k: float
+    silver: float
+    platinum: float
+    updated_at: datetime
+    updated_by_id: Optional[int] = None
+    
+    class Config:
+        from_attributes = True

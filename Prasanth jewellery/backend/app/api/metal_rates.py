@@ -30,7 +30,7 @@ def get_latest_metal_rate(db: Session = Depends(get_db)):
 def update_metal_rate(
     rate_in: MetalRateCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Admin", "Manager"]))
+    current_user: User = Depends(RoleChecker(["Admin"]))
 ):
     new_rate = MetalRate(
         gold_24k=rate_in.gold_24k,
@@ -39,7 +39,7 @@ def update_metal_rate(
         silver=rate_in.silver,
         platinum=rate_in.platinum,
         updated_at=datetime.utcnow(),
-        updated_by_id=current_user.id
+        updated_by_id=current_user.user_id
     )
     db.add(new_rate)
     db.commit()
@@ -47,9 +47,12 @@ def update_metal_rate(
     
     # Audit log
     log = AuditLog(
-        user_id=current_user.id,
+        user_id=current_user.user_id,
         action="UPDATE_METAL_RATES",
-        details=f"Rates updated: 24K Gold=₹{new_rate.gold_24k}, 22K Gold=₹{new_rate.gold_22k}, Silver=₹{new_rate.silver}"
+        table_name="metal_rates",
+        record_id=new_rate.rate_id,
+        old_values=None,
+        new_values=f"Rates updated: 24K Gold=₹{new_rate.gold_24k}, 22K Gold=₹{new_rate.gold_22k}, Silver=₹{new_rate.silver}"
     )
     db.add(log)
     db.commit()

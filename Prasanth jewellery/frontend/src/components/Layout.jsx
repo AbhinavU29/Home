@@ -17,7 +17,8 @@ import {
   BarChart3,
   UserCog,
   Database,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Settings as SettingsIcon
 } from 'lucide-react';
 
 export default function Layout({ children }) {
@@ -80,33 +81,33 @@ export default function Layout({ children }) {
       roles: ['Admin', 'Operator'] 
     },
     { 
-      name: 'POS Billing', 
+      name: 'POS Invoicing', 
       path: '/billing', 
       icon: Receipt, 
       roles: ['Admin', 'Operator'] 
     },
     { 
-      name: 'Customers CRUD', 
+      name: 'Customers', 
       path: '/crm', 
       icon: Users, 
       roles: ['Admin', 'Operator'] 
     },
     { 
-      name: 'Bill Registry', 
+      name: 'Transactions Registry', 
       path: '/reports', 
       icon: History, 
       roles: ['Admin', 'Operator'] 
     },
     { 
-      name: 'User Management', 
-      path: '/users', 
-      icon: UserCog, 
-      roles: ['Admin'] 
-    },
-    { 
       name: 'Product Master', 
       path: '/products', 
       icon: Database, 
+      roles: ['Admin'] 
+    },
+    { 
+      name: 'User Management', 
+      path: '/users', 
+      icon: UserCog, 
       roles: ['Admin'] 
     },
     { 
@@ -116,9 +117,15 @@ export default function Layout({ children }) {
       roles: ['Admin'] 
     },
     { 
-      name: 'Analytics', 
+      name: 'Analytics & Reports', 
       path: '/analytics', 
       icon: BarChart3, 
+      roles: ['Admin'] 
+    },
+    { 
+      name: 'Settings', 
+      path: '/settings', 
+      icon: SettingsIcon, 
       roles: ['Admin'] 
     },
   ];

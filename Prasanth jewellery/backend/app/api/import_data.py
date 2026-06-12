@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.auth import get_current_user, RoleChecker, validate_password_strength
@@ -40,6 +41,7 @@ def read_excel_rows(file_bytes: bytes, filename: str) -> list:
 @router.post("/users")
 def import_users(
     file: UploadFile = File(...),
+    dry_run: bool = False,
     db: Session = Depends(get_db),
     current_user: User = Depends(RoleChecker(["Admin"]))
 ):
@@ -117,36 +119,40 @@ def import_users(
         elif role.lower() in ["operator", "cashier", "billing", "staff"]:
             normalized_role = "Operator"
 
-        try:
-            new_user = User(
-                username=username,
-                password=get_password_hash(password),
-                role=normalized_role,
-                full_name=name,
-                mobile_number=mobile,
-                is_active=1
-            )
-            db.add(new_user)
-            db.flush()
+        if not dry_run:
+            try:
+                new_user = User(
+                    username=username,
+                    password=get_password_hash(password),
+                    role=normalized_role,
+                    full_name=name,
+                    mobile_number=mobile,
+                    is_active=1
+                )
+                db.add(new_user)
+                db.flush()
+                success_count += 1
+            except Exception as insert_err:
+                db.rollback()
+                errors.append({"row": idx, "error": f"Database error: {str(insert_err)}"})
+        else:
             success_count += 1
-        except Exception as insert_err:
-            db.rollback()
-            errors.append({"row": idx, "error": f"Database error: {str(insert_err)}"})
 
-    db.commit()
-
-    # Create Audit Log for Import
-    if success_count > 0:
-        audit = AuditLog(
-            action="IMPORT_USERS_EXCEL",
-            table_name="users",
-            record_id=0,
-            old_values=None,
-            new_values=f"Imported {success_count} users successfully from excel sheet.",
-            user_id=current_user.user_id
-        )
-        db.add(audit)
+    if not dry_run:
         db.commit()
+
+        # Create Audit Log for Import
+        if success_count > 0:
+            audit = AuditLog(
+                action="IMPORT_USERS_EXCEL",
+                table_name="users",
+                record_id=0,
+                old_values=None,
+                new_values=f"Imported {success_count} users successfully from excel sheet.",
+                user_id=current_user.user_id
+            )
+            db.add(audit)
+            db.commit()
 
     return {
         "total_rows": len(rows) - 1,
@@ -158,6 +164,7 @@ def import_users(
 @router.post("/products")
 def import_products(
     file: UploadFile = File(...),
+    dry_run: bool = False,
     db: Session = Depends(get_db),
     current_user: User = Depends(RoleChecker(["Admin"]))
 ):
@@ -250,35 +257,39 @@ def import_products(
             errors.append({"row": idx, "error": f"Product '{name}' with type '{ornament}' already exists in database."})
             continue
 
-        try:
-            new_prod = Product(
-                product_name=name,
-                ornament_type=ornament,
-                default_gold_weight=weight,
-                default_making_charge=charge,
-                gst_percent=gst,
-                status="Active"
-            )
-            db.add(new_prod)
-            db.flush()
+        if not dry_run:
+            try:
+                new_prod = Product(
+                    product_name=name,
+                    ornament_type=ornament,
+                    default_gold_weight=weight,
+                    default_making_charge=charge,
+                    gst_percent=gst,
+                    status="Active"
+                )
+                db.add(new_prod)
+                db.flush()
+                success_count += 1
+            except Exception as insert_err:
+                db.rollback()
+                errors.append({"row": idx, "error": f"Database error: {str(insert_err)}"})
+        else:
             success_count += 1
-        except Exception as insert_err:
-            db.rollback()
-            errors.append({"row": idx, "error": f"Database error: {str(insert_err)}"})
 
-    db.commit()
-
-    if success_count > 0:
-        audit = AuditLog(
-            action="IMPORT_PRODUCTS_EXCEL",
-            table_name="products",
-            record_id=0,
-            old_values=None,
-            new_values=f"Imported {success_count} products successfully from excel sheet.",
-            user_id=current_user.user_id
-        )
-        db.add(audit)
+    if not dry_run:
         db.commit()
+
+        if success_count > 0:
+            audit = AuditLog(
+                action="IMPORT_PRODUCTS_EXCEL",
+                table_name="products",
+                record_id=0,
+                old_values=None,
+                new_values=f"Imported {success_count} products successfully from excel sheet.",
+                user_id=current_user.user_id
+            )
+            db.add(audit)
+            db.commit()
 
     return {
         "total_rows": len(rows) - 1,
@@ -286,3 +297,43 @@ def import_products(
         "failure_count": len(errors),
         "errors": errors
     }
+
+@router.get("/users/template")
+def get_users_template(current_user: User = Depends(RoleChecker(["Admin"]))):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Users Template"
+    headers = ["Name", "Username", "Password", "Role", "Mobile"]
+    ws.append(headers)
+    ws.append(["John Doe", "john_operator", "OperatorPass123!", "Operator", "9876543210"])
+    ws.append(["Jane Admin", "jane_admin", "AdminPass123!", "Admin", "9876543211"])
+    
+    out = io.BytesIO()
+    wb.save(out)
+    out.seek(0)
+    
+    return StreamingResponse(
+        out,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=users_import_template.xlsx"}
+    )
+
+@router.get("/products/template")
+def get_products_template(current_user: User = Depends(RoleChecker(["Admin"]))):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Products Template"
+    headers = ["Product Name", "Ornament Type", "Gold Weight", "Making Charge", "GST"]
+    ws.append(headers)
+    ws.append(["Gold Ring 22K", "Ring", "4.5", "250", "3"])
+    ws.append(["Gold Choker BIS", "Necklace", "18.2", "450", "3"])
+    
+    out = io.BytesIO()
+    wb.save(out)
+    out.seek(0)
+    
+    return StreamingResponse(
+        out,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=products_import_template.xlsx"}
+    )

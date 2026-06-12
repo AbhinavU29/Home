@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -14,7 +15,8 @@ import {
   ToggleLeft,
   ToggleRight,
   TrendingUp,
-  Tag
+  Tag,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export default function ProductMaster() {
@@ -176,13 +178,22 @@ export default function ProductMaster() {
           </p>
         </div>
         
-        <button 
-          onClick={openAddModal} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center gap-1.5 transition-colors shadow-md shadow-blue-500/15"
-        >
-          <Plus className="w-4 h-4" /> 
-          Add Product
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link 
+            to="/import-data" 
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-green-500/15"
+          >
+            <FileSpreadsheet className="w-4 h-4" /> 
+            Bulk Upload Excel
+          </Link>
+          <button 
+            onClick={openAddModal} 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-blue-500/15"
+          >
+            <Plus className="w-4 h-4" /> 
+            Add Product
+          </button>
+        </div>
       </div>
 
       {success && (

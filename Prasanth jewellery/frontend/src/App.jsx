@@ -14,6 +14,7 @@ import Analytics from './pages/Analytics';
 import UsersManagement from './pages/UsersManagement';
 import ProductMaster from './pages/ProductMaster';
 import ImportData from './pages/ImportData';
+import Settings from './pages/Settings';
 
 // Route guard checking login state and role permission
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -96,6 +97,12 @@ export default function App() {
           <Route path="/analytics" element={
             <ProtectedRoute allowedRoles={['Admin']}>
               <Layout><Analytics /></Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/settings" element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <Layout><Settings /></Layout>
             </ProtectedRoute>
           } />
 

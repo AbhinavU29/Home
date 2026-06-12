@@ -94,3 +94,15 @@ class AuditLog(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User")
+
+class MetalRate(Base):
+    __tablename__ = "metal_rates"
+    
+    rate_id = Column(Integer, primary_key=True, index=True)
+    gold_24k = Column(Float, nullable=False, default=7200.0)
+    gold_22k = Column(Float, nullable=False, default=6600.0)
+    gold_18k = Column(Float, nullable=False, default=5400.0)
+    silver = Column(Float, nullable=False, default=90.0)
+    platinum = Column(Float, nullable=False, default=3200.0)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_by_id = Column(Integer, ForeignKey("users.user_id"), nullable=True)
